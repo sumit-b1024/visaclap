@@ -1,0 +1,36 @@
+https://maps.googleapis.com/maps/api/place/nearbysearch/json
+  ?location=-19.009809,72.866287
+  &radius=1500
+  &type=restaurant
+  &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=19.0759837,72.8776559&radius=1500&types=restaurants&name=mumbai&key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/details/json
+  ?fields=name%2Crating%2Cformatted_phone_number%2Caddress_component
+  &place_id=ChIJN1t_tDeuEmsRUsoyG83frY4
+  &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=19.0759837,72.8776559
+    &radius=1500
+    &type=restaurant
+    &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/photo?maxwidth=400
+  &photo_reference=Aap_uED83r5FORP8raBFDYpb16mPZfLr5W3blHVRDH56mIVwxmrdwblNVBjDf0Y248FB8yuwHhq4i7RRa_YzakiC1P5MYECpddaWFOC31za3t-PJgY2DjKNJGLf2CNMUwXGN_ZY9pBhvoeJKnznR-xbWQP-xDyWWTKpXV52qETu3LwXGNxOu
+  &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/details/json?fields=name%2Crating%2Cformatted_phone_number,photo,formatted_address
+  &place_id=test
+  &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/details/json
+    ?fields=name,rating,formatted_phone_number,photo,formatted_address
+        &place_id=ChIJD98cx4rJWTkRO62Tvs8V3XY
+        &key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/textsearch/json?query=point+of+interest+in+hyderabad&key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.856614%2C2.3522219&radius=20000&keyword=things%20to%20do%20in%20hyderabad&rankby=prominence&key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8
+
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.856614,2.3522219&radius=10000&&keyword=things%20to%20do%20in%20paris&type=tourist_attraction&key=AIzaSyAXJQGl6TomlsjP_YVPFaLgtpLwilaVNM8

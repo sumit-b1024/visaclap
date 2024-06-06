@@ -1,0 +1,41 @@
+ALTER TABLE `cs_master_itenerary` CHANGE `city` `city` INT(11) NULL DEFAULT NULL;
+
+ALTER TABLE `cs_supplier_tbl` ADD `enquiry_staff_id` INT(11) NULL DEFAULT NULL AFTER `franchise_id`;
+
+ALTER TABLE `cs_package_meta` ADD `duration` VARCHAR(256) NULL DEFAULT NULL AFTER `description`;
+
+ALTER TABLE `cs_package_meta` ADD `price` INT(11) NULL DEFAULT NULL AFTER `duration`;
+
+ALTER TABLE `cs_sub_itenerary` CHANGE `time` `time` TIME NULL DEFAULT NULL;
+
+ <!-- 09-14-2022 -->
+ALTER TABLE `cs_package_meta` ADD `latitude` TEXT NULL DEFAULT NULL AFTER `price`, ADD `longitude` TEXT NULL DEFAULT NULL AFTER `latitude`;
+
+<!-- 09-20-2022 -->
+CREATE TABLE `visaclaptour`.`cs_enquiry_category_icon_tbl` (`id` INT NOT NULL AUTO_INCREMENT , `enquiry_id` INT NOT NULL , `img_name` VARCHAR(256) NOT NULL , `created_at` DATETIME NOT NULL , `updated_at` DATETIME NULL DEFAULT NULL , `created_by` INT NULL DEFAULT NULL , `updated_by` INT NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+<!-- 09-22-2022 -->
+ALTER TABLE `cs_cities` ADD `country_id` INT NULL DEFAULT NULL AFTER `state_id`;
+
+<!-- 09-23-2022 -->
+ALTER TABLE `cs_supplier_tbl` ADD `city` TEXT NULL DEFAULT NULL AFTER `enquiry_type`;
+
+<!-- 09-26-2022 -->
+CREATE TABLE `visaclaptour`.`cs_batch_tbl` (`id` INT(11) NOT NULL , `batch_name` TEXT NOT NULL , `enquiry_id` INT(11) NOT NULL , `created_at` DATETIME NOT NULL , `created_by` INT(11) NOT NULL , `updated_at` DATETIME NULL DEFAULT NULL , `updated_by` INT(11) NULL DEFAULT NULL ) ENGINE = InnoDB;
+
+<!-- 30-09-2022 -->
+ALTER TABLE `cs_package_meta` ADD `category_id` INT NULL DEFAULT NULL AFTER `longitude`;
+
+<!-- 03-10-2022 -->
+ALTER TABLE `cs_package_meta` CHANGE `category_id` `category_id` TEXT NULL DEFAULT NULL;
+
+<!-- 14-10-2022 -->
+ALTER TABLE `cs_package_meta` ADD `is_admin` INT NULL DEFAULT '0' COMMENT '0=franchise,1=admin' AFTER `longitude`;
+
+<!-- 15-10-2022 -->
+ALTER TABLE `cs_master_itenerary` ADD `is_admin_or_franchise` INT NOT NULL DEFAULT '0' COMMENT '0=franchise,1=admin' AFTER `update_at`;
+
+
+<!-- 22-10-2022 -->
+ALTER TABLE `cs_template_store` CHANGE `expiry_date` `expiry_date` DATE NULL DEFAULT NULL;
+

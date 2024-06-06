@@ -1,0 +1,317 @@
+/*top-header*/
+.top-header .ticket-logo {
+	width: 100%;
+	height: 100px;
+}
+
+.top-header .ticket-logo img {
+	height: 100%;
+	object-fit: contain;
+}
+
+.top-header  .row {
+	align-items: center;
+}
+
+.top-header .ticke-name p {
+	margin-bottom: 0;
+	font-size: 13px;
+}
+
+.top-header .ticke-name h5 {
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.top-header .container {
+	border-bottom: solid 1px #ccc;
+}
+
+/*ticket-detail*/
+.ticket-detail-box {
+	padding-top: 20px;
+}
+
+.ticket-detail-box .ticket-details h3 {
+	font-size: 15px;
+	line-height: normal;
+	margin-bottom: 0;
+}
+
+.ticket-detail-box .ticket-details h4 {
+	font-size: 25px;
+	font-weight: 700;
+}
+
+.ticket-detail-box .ticket-details h4 span {
+	font-weight: 400;
+}
+
+.ticket-detail-box .flight-name img {
+	max-width: 25px;
+}
+
+.ticket-detail-box .main-div-cls {
+	padding: 15px 30px;
+}
+
+.ticket-detail-box .flight-name span {
+	font-size: 18px;
+	vertical-align: middle;
+}
+
+.ticket-detail-box .flight-name span span.opr-cls {
+	font-size: 12px;
+}
+
+.ticket-detail-box .ticket-distance {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding: 15px 0px;
+	border-top: solid 1px #ccc;
+	margin: 15px 0px 5px;
+	border-bottom: solid 1px #ccc;
+}
+
+
+.ticket-detail-box .ticket-distance .inner-bx h3 {
+	font-size: 23px;
+	margin-bottom: 0;
+}
+
+.ticket-detail-box .ticket-distance .inner-bx p {
+	margin-bottom: 0;
+	font-size: 14px;
+}
+
+.ticket-detail-box .beggage-info p {
+	margin-bottom: 0;
+	font-size: 14px;
+}
+
+.travel-details {
+	margin-top: 10px;
+}
+
+.travel-details h3 {
+	font-size: 21px;
+}
+
+.travel-details .travel-table tr th, .travel-details .travel-table tr td {
+	padding: .5rem .5rem;
+	border: solid 1px  #ccc;
+	text-align: center;
+}
+
+.travel-details .travel-table tr th {
+	background: #f5f5f5;
+}
+
+.travel-details .travel-table tr th span {
+	display: block;
+	position: relative;
+}
+
+.travel-details .travel-table tr th span:before {
+	content: '';
+	width: 116%;
+	height: 1px;
+	background: #ccc;
+	top: 0px;
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.travel-details .travel-table tr td .status{
+	color: #24d4ae;
+}
+
+.summery-box {
+	padding-top: 20px;
+}
+
+.summery-box .tp-heading {
+	padding-bottom: 20px;
+}
+
+.summery-box .tp-heading h3 {
+	font-size: 21px;
+	margin-bottom: 0;
+}
+
+.summery-box .tp-heading p {
+	font-size: 14px;
+	margin-bottom: 0;
+}
+
+.summery-box .sum-table table tr th, .summery-box .sum-table table tr td {
+	padding: 0.42rem 0.4rem;
+	border: solid 1px #ccc;
+}
+
+.summery-box .sum-table table tr th {
+	background: #f5f5f5;
+	font-weight: 400;
+}
+
+.summery-box .sum-table table tr th:last-child, .summery-box .sum-table table tr td:last-child {
+	text-align: right;
+}
+
+
+.summery-box .cencel-time-table table tr th {
+	text-align: center;
+	padding: 0.4rem 0.4rem;
+	border: solid 1px #ccc;
+	background: #f5f5f5;
+}
+
+.summery-box .cencel-time-table table tr td{
+	vertical-align: top;
+}
+
+.summery-box .cencel-time-table table tr td table th, .summery-box .cencel-time-table table tr td table td {
+	padding: 0.5rem;
+	border: none;
+	border-right: solid 1px #ccc;
+	text-align: center;
+}
+
+.summery-box .cencel-time-table table tr td table th:last-child, .summery-box .cencel-time-table table tr td table td:last-child {
+	border-right: none;
+
+}
+
+.cancell-charge .cencal-box {
+	padding-top: 20px;
+}
+
+.cancell-charge .cencal-box h3 {
+	font-size: 21px;
+	margin-bottom: 0;
+}
+
+.cancell-charge .cencal-box h4 {
+	font-size: 20px;
+}
+
+.cancell-charge .cencal-box .term-conditions h5 {
+	padding: 15px 0px;
+	margin-bottom: 0;
+}
+
+.cancell-charge .cencal-box .term-conditions ul li {
+	font-size: 14px;
+	margin-bottom: 8px;
+}
+
+.bottom-details .allow-img {
+	width: 100%;
+	height: 100%;
+	margin-top: 15px;
+}
+
+.bottom-details .allow-img img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.bottom-details .detail {border-top: solid 1px #ccc;padding-top: 15px;margin-top: 15px;}
+
+.bottom-details .detail p {
+	margin-bottom: 0;
+	color: #8c8787;
+}
+
+@media (max-width: 767px){
+	.travel-table table {
+		border: 0;
+	}
+
+	.travel-table table thead {
+		border: none;
+		clip: rect(0 0 0 0);
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		padding: 0;
+		position: absolute;
+		width: 1px;
+	}
+
+	.travel-details .travel-table tr td:last-child {
+		border-bottom: none;
+	}
+	.travel-details .travel-table tr th, .travel-details .travel-table tr td {
+		border: solid 1px  #171717;
+	}
+
+	.travel-details .travel-table tr td:first-child {
+		border-top: none;
+	}
+
+	.travel-details .travel-table tr td {
+		border-bottom: none;
+	}
+
+	.travel-table table td {
+		display: block;
+		text-align: right !important;
+	}
+
+	.travel-table table td::before {
+		content: attr(data-label);
+		float: left;
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+
+	.cencel-time-table {
+		padding-top: 15px;
+	}
+
+	.ticket-detail-box .main-div-cls {
+		padding: 15px 0px;
+	}
+}
+
+@media (max-width: 576px){
+	.ticket-detail-box .ticket-details h4 {
+		font-size: 18px;
+	}
+
+	.ticket-detail-box .ticket-distance .inner-bx h3 {
+		font-size: 18px;
+	}
+
+	.top-header .ticket-logo {
+		height: 66px;
+	}
+
+	.top-header {
+		padding: 10px 0px 0px;
+	}
+
+	.top-header .container {
+		padding-bottom: 10px;
+	}
+
+	.ticket-detail-box .ticket-details h3 {
+		font-size: 13px;
+	}
+
+	.summery-box .cencel-time-table table tr th {
+		font-size: 14px;
+	}
+
+	.summery-box .cencel-time-table table tr td {
+		font-size: 13px;
+	}
+
+	.travel-table table td {
+		font-size: 13px;
+	}
+}

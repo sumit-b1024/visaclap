@@ -1,0 +1,26 @@
+http://localhost/visa_api/api/visacountry (get request)
+result 
+	=> list country name
+
+http://localhost/visa_api/api/visacountry (Post request request)
+parameter name 
+	=> from_country = 107 (country id)
+	=> to_country = 2 (country id)
+result 
+	=> list of visa
+
+
+http://localhost/visa_api/api/visatype (Post request request)
+parameter name 
+	=> destination_country_id = 107 (country id)
+	=> origin_country_id = 2 (country id)
+
+result 
+	=> list visatype
+
+
+
+
+header set
+x-DomainKey:eijuWCPDhAm26RwuOyPpXnhCf9fgzLIgs1LqmQDBOIHrbMyk9cspvLbhoJzAJbreX	
+

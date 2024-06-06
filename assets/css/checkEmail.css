@@ -1,0 +1,313 @@
+@keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  .clip-path-group {
+    position: absolute;
+    height: 100%;
+    width: 35.04%;
+    top: 0;
+    right: 64.96%;
+    bottom: 0;
+    left: 0;
+    max-width: 100%;
+    overflow: hidden;
+    max-height: 100%;
+  }
+  .vector-icon,
+  .vector-icon1,
+  .vector-icon2,
+  .vector-icon3,
+  .vector-icon4 {
+    position: absolute;
+    height: 37.67%;
+    width: 10.73%;
+    top: 48.23%;
+    right: 56.72%;
+    bottom: 14.1%;
+    left: 32.55%;
+    max-width: 100%;
+    overflow: hidden;
+    max-height: 100%;
+  }
+  .vector-icon1,
+  .vector-icon2,
+  .vector-icon3,
+  .vector-icon4 {
+    height: 37.45%;
+    width: 9.42%;
+    right: 43.44%;
+    bottom: 14.32%;
+    left: 47.14%;
+  }
+  .vector-icon2,
+  .vector-icon3,
+  .vector-icon4 {
+    height: 38.12%;
+    width: 10.66%;
+    top: 47.56%;
+    right: 28.51%;
+    left: 60.83%;
+  }
+  .vector-icon3,
+  .vector-icon4 {
+    height: 36.78%;
+    width: 9.23%;
+    top: 48.23%;
+    right: 13.93%;
+    bottom: 14.99%;
+    left: 76.83%;
+  }
+  .vector-icon4 {
+    width: 9.61%;
+    right: 0;
+    left: 90.39%;
+  }
+  .clip-path-group-parent {
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    position: absolute;
+    height: 3.59%;
+    width: 7.15%;
+    top: 6.67%;
+    right: 87.64%;
+    bottom: 89.74%;
+    left: 5.21%;
+  }
+  .featured-icon {
+    position: relative;
+    border-radius: 28px;
+    width: 66px;
+    height: 66px;
+  }
+  .supporting-text,
+  .text {
+    align-self: stretch;
+    position: relative;
+  }
+  .text {
+    line-height: 38px;
+    font-weight: 600;
+  }
+  .supporting-text {
+    font-size: var(--text-md-semibold-size);
+    line-height: 24px;
+    color: var(--gray-600);
+  }
+  .supporting-text .resendEmailClick{
+    color: #7F56D9;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .header,
+  .text-and-supporting-text {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .text-and-supporting-text {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .header {
+    align-items: center;
+    gap: var(--gap-5xl);
+  }
+  .label {
+    position: relative;
+    line-height: 20px;
+    font-weight: 500;
+  }
+  .input {
+    border: 1px solid var(--gray-300);
+    font-family: var(--text-sm-semibold);
+    font-size: var(--text-md-semibold-size);
+    background-color: var(--base-white);
+    align-self: stretch;
+    border-radius: var(--br-5xs);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    padding: var(--padding-3xs) 14px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .hint-text {
+    align-self: stretch;
+    position: relative;
+    line-height: 20px;
+    color: var(--gray-600);
+    display: none;
+  }
+  .input-field {
+    gap: var(--gap-7xs);
+    margin-bottom: 10px;
+  }
+  .form,
+  .input-field {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+  .placeholder-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+    display: none;
+  }
+  .text1 {
+    position: relative;
+    font-size: var(--text-md-semibold-size);
+    line-height: 24px;
+    font-weight: 600;
+    font-family: var(--text-sm-semibold);
+    color: var(--base-white);
+    text-align: left;
+  }
+  .button,
+  .content1 {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+  }
+  .button {
+    cursor: pointer;
+    border: 1px solid var(--primary-700);
+    padding: var(--padding-3xs) 18px;
+    background-color: var(--primary-700);
+    border-radius: var(--br-5xs);
+    box-shadow: var(--shadow-xs);
+    overflow: hidden;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--gap-5xs);
+    margin-bottom: 10px;
+  }
+  .content1 {
+    border-radius: 12px;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--gap-5xl);
+    text-align: center;
+    font-size: var(--text-sm-semibold-size);
+    color: var(--gray-700);
+  }
+  .arrow-left-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .text2 {
+    position: relative;
+    font-size: var(--text-sm-semibold-size);
+    line-height: 20px;
+    font-weight: 600;
+    font-family: var(--text-sm-semibold);
+    color: var(--gray-600);
+    text-align: left;
+  }
+  .button1,
+  .content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .button1 {
+    cursor: pointer;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    overflow: hidden;
+    flex-direction: row;
+    gap: var(--gap-5xs);
+  }
+  .content {
+    position: absolute;
+    top: 10%;
+    left: calc(50% - 180px);
+    width: 360px;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .forgot-password {
+    position: relative;
+    background-color: var(--base-white);
+    width: 100%;
+    height: 960px;
+    opacity: 0;
+    text-align: center;
+    font-size: var(--display-sm-semibold-size);
+    color: var(--gray-900);
+    font-family: var(--text-sm-semibold);
+  }
+  .forgot-password.animate {
+    animation: 1s ease-in-out 0s 1 normal forwards fade-in;
+  }
+  .header-navigation,
+.logo {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.header-navigation {
+  align-self: stretch;
+  height: 96px;
+  display: flex;
+  padding: var(--padding-13xl);
+  box-sizing: border-box;
+}
+.content-icon,
+.logo-icon {
+  position: relative;
+  width: 91px;
+  height: 33.02px;
+}
+  @media screen and (max-width: 1024px) {
+    .clip-path-group-parent{
+      width: 12%;
+    }
+  }
+  @media screen and (max-width: 425px) {
+    .clip-path-group-parent{
+      width: 30%;
+    }
+    .content {
+      top: calc(50% - 30%);
+      left: calc(50% - 180px);
+      /* width: 260px; */
+    }
+    .forgot-password{
+      height: 100vh;
+    }
+  
+  }
+  @media screen and (max-width: 375px) {
+    .clip-path-group-parent{
+      width: 30%;
+    }
+    .text{
+      font-size: 24px;
+    }
+    .supporting-text{
+      font-size: 18px;
+    }
+    .content {
+      top: calc(50% - 30%);
+      left: calc(50% - 130px);
+      width: 260px;
+  }
+  }

@@ -1,0 +1,11 @@
+.w9 { width: 9% !important; }
+.w70 { width: 39% !important; }
+.card-header { display: inline-block !important; }
+.error-text { font-size: 87.5%; color: #e23e3d; }
+.c_delete_btn { position: absolute; right: 22px; top: 9px; } 
+
+@media (max-width: 991px){
+	.sidebar-mini .app-header .light-logo1 {
+	    width: 84px !important;
+	}
+}
