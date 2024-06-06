@@ -184,7 +184,7 @@
 </div>
 <div class="card-body">
   <div class="table-responsive" id="view_enquiry_tbl">
-   hello {{dataFromServer.length}}
+     
   <table class="table table-bordered text-nowrap border-bottom" id="finalize_enquiry_report_pool">
   <thead>
      <tr>
@@ -539,9 +539,7 @@ referrerpolicy="no-referrer"
 
    $(document).ready(function () {
       get_all_country();
-    $('#finalize_enquiry_report_pool').DataTable({
-        order: [[6, 'desc']],
-    });
+   
 
     $(document).on('click', '.change_process_pool_status', function () { 
      var continue_to = base_url + 'franchise/reports';
@@ -898,8 +896,10 @@ const app = createApp({
     },
     watch: {
       dataFromServer(newValue, oldValue) {
+         alert();
          if(this.dataTable)
             {
+
                   console.log( this.dataTable);
                   this.dataTable.destroy();
             }
@@ -935,11 +935,7 @@ const app = createApp({
          self.totalPages = data.total_pages;
          
          
-       //$('#finalize_enquiry_report_pool').DataTable();
-       $('#finalize_enquiry_report_pool').DataTable({
-        order: [[4, 'desc']],
-       });
-       
+    
       }});
             },
             getFormValues()

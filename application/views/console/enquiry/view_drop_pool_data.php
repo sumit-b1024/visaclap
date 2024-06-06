@@ -905,3 +905,99 @@ if ($(".followup").length > 0) {
 });
 
 </script>
+
+
+
+<script >
+ 
+    const { createApp, ref, watch ,nextTick} = Vue;
+
+document.addEventListener('DOMContentLoaded', () => {
+ 
+   const { createApp } = Vue;
+   const dataFromServer = ref([])
+
+const app = createApp({
+   
+    data() {
+      
+        return {
+         currentPage: 1,
+         dataTable:null,
+         dataFromServer,
+                totalPages: 1,
+            message: ''
+        };
+    },
+    watch: {
+      dataFromServer(newValue, oldValue) {
+         alert();
+         if(this.dataTable)
+            {
+
+                  console.log( this.dataTable);
+                  this.dataTable.destroy();
+            }
+         nextTick(() => {
+           
+          
+ 
+           this.dataTable= $('#finalize_enquiry_report_pool').DataTable({
+        order: [[4, 'desc']],
+       });
+                 
+                 
+                });
+
+         
+        }
+    },
+    methods:
+   {
+    
+      fetchData(page,formData) {
+          
+                const self = this;  // Preserve the Vue instance context
+
+                $.ajax({
+      url : base_url+'franchise/reports/generate_finalize_enquiry_report',
+      type : "POST",
+      data : $('.detail_search').serializeArray(),
+      success :function(data){
+        
+         self.dataFromServer = data.fetch_enquiry_array;
+         self.currentPage = data.current_page;
+         self.totalPages = data.total_pages;
+         
+         
+    
+      }});
+            },
+            getFormValues()
+      {
+         
+        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
+      },
+      getFormValuesSimple()
+      {
+         this.fetchData(this.currentPage);
+      }
+   },
+    
+    mounted() {
+      const self = this; 
+      this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
+
+    },
+    beforeDestroy() {
+    // Destroy the DataTable instance to prevent memory leaks
+    if (this.dataTable) {
+      this.dataTable.destroy();
+    }
+  }
+   });
+
+app.mount('#firstApp');
+});
+</script>
+
