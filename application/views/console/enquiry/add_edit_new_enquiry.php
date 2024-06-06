@@ -58,6 +58,7 @@
 									<?php } ?>
 
 								</select>
+								<input type="hidden" name="enquiry_name" value="<?= isset($enquiry->enquiry_name) && !empty($enquiry->enquiry_name) ? $enquiry->enquiry_name : set_value('enquiry_name'); ?>" class="enquiryname" />
 							</div>
 						</div>
 						
@@ -88,13 +89,14 @@
 							</div>
 						</div>
 
-						<div class="col-sm-6 col-md-6">
+						<div class="col-sm-6 col-md-6 intrestedcountry">
 							<div class="form-group input-inside">
 								<label class="form-label">Select Intersted Country</label>
 								<select class="form-control  select2-show-search  i_country multiple_country" id="i_country" name="" value="<?= $enquiry->intersted_country ?>" data-placeholder="Select Intersted Country">
 									
 								</select>
 							</div>
+							<input type="hidden" name="intersted_country_name" class="intersted_country_name" value="<?= isset($enquiry->intersted_country_name) && !empty($enquiry->intersted_country_name) ? $enquiry->intersted_country_name : set_value('intersted_country_name'); ?>">
 						</div>
 
 						<div class="col-sm-6 col-md-6 selectvisa" style="display:none;">
@@ -104,6 +106,7 @@
 									
 								</select>
 							</div>
+							<input type="hidden" name="visatype_name" class="visatype_name" value="<?= isset($enquiry->visa_name) && !empty($enquiry->visa_name) ? $enquiry->visa_name : set_value('visa_name'); ?>">
 						</div> 
 
 						<!-- <div class="col-sm-6 col-md-6">
@@ -229,6 +232,7 @@ referrerpolicy="no-referrer"
 
 <?php $countryid =  $enquiry->intersted_country;?>
 <?php $visaid =  $enquiry->visa_id;?>
+<?php $intersted_country_name =  $enquiry->intersted_country_name;?>
 <script type="text/javascript">
 	
 	function goBack() {
@@ -247,14 +251,32 @@ referrerpolicy="no-referrer"
         mode: 'cors',
        success:function(data){
         var countryidarray = countryid.split(',');
+        var countrylen = countryidarray.length;
         if(data.code != 500){
+
+        	$(".i_country").append('<option>Select Country</option>');
           $.each(data.message, function (key, val) {
             let selected="";
               if(jQuery.inArray(val.id, countryidarray) != -1) {
                     selected = 'selected';
+                    console.log(val.id);
+                }else{
+                		selected = '';
                 }
+
              $(".i_country").append('<option value="'+val.id+'" '+selected+'>'+val.name+'</option>');
+
          });
+
+          if(countrylen > 1){
+          	//$('.i_country').trigger('change');
+          	$('.i_country').select2({multiple: true});
+          	$('.i_country').val(countryidarray);
+          	$('.i_country').attr('name', 'i_country[]');
+          	$('.i_country').trigger('change');
+          	$('.selectvisa').hide();
+          }
+          	
         }else{
          alert("Please Enter Domain key");
       }
@@ -339,9 +361,12 @@ jQuery(document).on('click', '.remove_row', function() {
               
   });
 
+
+
+
 	/* get visa type name */
 	$('.i_country').on('change',function(){
-		console.log('111');
+		
 		var destination = $(this).val();  
 		// if(destination){
 			$.ajax({
@@ -356,12 +381,14 @@ jQuery(document).on('click', '.remove_row', function() {
 					if(data){
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
+						//alert(data.message[0].type_of_visa);
 						$.each(data.message,function(key,value){
+
 							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'">'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'">'+data.message[key].type_of_visa+'</option>');
 						});
 					}else{
 						$("#visatype").empty();
@@ -377,6 +404,7 @@ jQuery(document).on('click', '.remove_row', function() {
 	});
 	function geteditvisa(country){
 		var destination = country;
+
 		$.ajax({
 				type:"POST",
 				url: base_url + "franchise/reports/get_all_visa_by_country_id",
@@ -384,16 +412,17 @@ jQuery(document).on('click', '.remove_row', function() {
 				dataType : 'JSON',
 				success:function(data){
 					 var visaidarray = visaid.split(','); 
+					 
 					if(data.status != "false"){
 					if(data){
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
 							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'" '+selected+'>'+data.message[key].type_of_visa+'</option>');
 						});
 					}else{
 						$("#visatype").empty();
@@ -495,7 +524,14 @@ jQuery(document).on('click', '.remove_row', function() {
     });
 	  $('body').on('change', '.enquiry_type', function() {
 		var enquiry_type = $("#enquiry_type option:selected").val();
+		var enquiry_type_name = $("#enquiry_type option:selected").text();
 		
+		
+	  	if(enquiry_type == '35'){
+	  		$('.intrestedcountry').hide();
+	  	}else{
+	  		$('.intrestedcountry').show();
+	  	}
 	  	if(enquiry_type == '32'){
 	  		//$('.i_country').prop('multiple', false);
 	  		$('.multiple_country ').select2({
@@ -503,6 +539,7 @@ jQuery(document).on('click', '.remove_row', function() {
 			  });
 	  		$('.i_country').attr('name', 'i_country');
 	  		$('.selectvisa').show();
+	  		
 	  	}else{
 	  		//$('.i_country').prop('multiple', true);
 	  		//$('.i_country').attr('multiple', 'multiple');
@@ -511,12 +548,37 @@ jQuery(document).on('click', '.remove_row', function() {
 			  });
 	  		$('.i_country').attr('name', 'i_country[]');
 	  		$('.selectvisa').hide();
+
+	  		//intersted_country_name
 	  	}
+	  	$('.enquiryname').val(enquiry_type_name);
+
+//visachange
+	  });
+
+	  $('body').on('change', '.i_country', function() {
+	  	//var int_country_name = $("#i_country option:selected").text();
+	  	var items = $("#i_country option:selected").map((i, el) => el.textContent.trim()).get();
+	  	$('.intersted_country_name').val(items.join());
+
+	  });
+	  $('body').on('change', '#visatype', function() {
+	  	//var int_country_name = $("#i_country option:selected").text();
+	  	
+	  	var visatype_name = $("#visatype option:selected").text();
+	  	$('.visatype_name').val(visatype_name);
+
 	  });
 	  
-	$(document).ready(function() {
-		var enquirytype = '<?= isset($enquiry) && !empty($enquiry->enquiry_type) ? '32' : set_value('enquiry_type'); ?>';
+	$(document).ready(function() { 
+		var enquirytype = '<?= isset($enquiry) && !empty($enquiry->enquiry_type) ? $enquiry->enquiry_type : $enquiry->enquiry_type; ?>';
 		// $('select').select2();
+		
+		if(enquirytype == '35'){
+	  		$('.intrestedcountry').hide();
+	  	}else{
+	  		$('.intrestedcountry').show();
+	  	}
 		if(enquirytype == '32'){
 			$('.multiple_country ').select2({
 			    multiple: false,
@@ -535,6 +597,7 @@ jQuery(document).on('click', '.remove_row', function() {
 			$('.selectvisa').hide();
 		}
 		 get_all_country();
+
 		 geteditvisa(countryid);
 
 		$(document).on('click',"#submit_btn",function(event){

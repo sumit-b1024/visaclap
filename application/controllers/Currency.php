@@ -17,10 +17,7 @@ class Currency extends MY_Controller {
 
 			$title = 'Notification';
 			
-			$this->content->breadcrumb = array(
-				'Dashboard' => 'dashboard',
-				$title      => null
-			);
+			$this->content->breadcrumb = array('Dashboard' => 'dashboard',$title      => null);
 
 			$this->content->title   = 	$title;
 			$this->content->action  = 	'';
@@ -91,12 +88,9 @@ class Currency extends MY_Controller {
 		if(!$noti_id) {
 			redirect('currency', 'refresh');
 		}
-		$title = 'Edit Currency';
 
-		$this->content->breadcrumb = array(
-			'Currency' => 'currency',
-			$title      => null
-		);
+		$title = 'Edit Currency';
+		$this->content->breadcrumb = array('Currency' => 'currency',$title      => null);
 
 		$page_title = 'Edit Currency';
 		$this->content->cur = $this->setting_model->get_currency($noti_id);
@@ -107,7 +101,6 @@ class Currency extends MY_Controller {
 	}
 	
 	function ajax_add_currency() {
-
 		if($this->input->is_ajax_request()) {
 			$post = $this->input->post();
 			// xdebug($post);
@@ -117,12 +110,14 @@ class Currency extends MY_Controller {
 				$noti['id'] 	= $post['id'];
 				$noti_id = $this->setting_model->currency_edit($noti);
 				$message = 'Currency updated successfully';
+
 			} else {
-				
+
 				$noti['curname'] 		= $post['curname'];
 				$noti['created_at'] 	= date('Y-m-d H-i:s');
 				$noti_id = $this->setting_model->currency_add($noti);
 				$message = 'Notification added successfully';
+
 			}
 			
 			if(!empty($noti_id) && isset($noti_id) && $noti_id > 0) {

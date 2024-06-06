@@ -43,12 +43,11 @@ class Reports extends MY_Controller
 
 		$this->content->get_all_itenerary_names = $this->setting_model->get_all_itenerary_names();
 		$this->content->get_all_staff_data = $this->setting_model->get_all_staff_data();
-		
+		$this->content->company_permission      	= 	$this->setting_model->get_booking_profit();
 		$this->load_view('enquiry_report', $title);
 	}
 
 	function generate_enquiry_report(){	
-		 
 		if($this->input->post()){
 			$post = $this->input->post();
 			$follow_up_date = $post['follow_up_date'];
@@ -63,18 +62,16 @@ class Reports extends MY_Controller
 			$enquiry_type = $post['enquiry_type'];
 			$s_description = $post['s_description'];
 			$staff_id = $post['enquiry_staff_id'];
-			
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,0,$city,$enquiry_type);
 			$this->output
 			->set_content_type('application/json')
 			->set_output(json_encode($data));
-			 
+			
 			//$this->load->view('console/reports/view_enquiry_report_page',$data);
 		}
 	}
 
 	function generate_enquiry_detail_report(){	
-		 
 		if($this->input->post()){
 			$post = $this->input->post();
 			$uname = $post['uname'];
@@ -113,10 +110,11 @@ class Reports extends MY_Controller
 			$email = $post['email'];
 			$number = $post['number'];
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_detail_data(Enquiry_pool_status::FINALIZE,$uname,$email,$number);
-			//$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
-			$this->load->view('console/reports/view_finalize_enquiry_report_page',$data);
+			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+			//$this->load->view('console/reports/view_finalize_enquiry_report_page',$data);
 		}
 	}
+
 	function generate_drop_enquiry_report(){	
 		if($this->input->post()){
 			$post = $this->input->post();
@@ -133,7 +131,7 @@ class Reports extends MY_Controller
 			$staff_id = $post['enquiry_staff_id'];
 			
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::DROP,array(),$enquiry_type,$reason_type);
-			
+			$data['company_permission'] = $this->setting_model->get_booking_profit();
 			$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
 		}
 	}
@@ -145,6 +143,8 @@ class Reports extends MY_Controller
 			$email = $post['email'];
 			$number = $post['number'];
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_detail_data(Enquiry_pool_status::DROP,$uname,$email,$number);
+			$data['company_permission'] = $this->setting_model->get_booking_profit();
+
 			$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
 		}
 	}
@@ -181,6 +181,7 @@ class Reports extends MY_Controller
 			$this->load->view('console/reports/view_process_enquiry_report_page',$data);
 		}
 	}
+
 	function get_all_cities_by_country_id(){
 		$post = $this->input->post();
 		if($post){
@@ -206,30 +207,45 @@ class Reports extends MY_Controller
 		}
 
 		if($post){
-			$url = API_URL.'getvisatype';
+			//$url = API_URL.'getvisatype';
+			//$ch = curl_init($url);
+	        //$data1 = array('country'=>$country);
+	        if($this->session->userdata('user_role') == User_role::FRANCHISE){
+     			$fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('user_id'));
+			 }
 
-	        $ch = curl_init($url);
-	        $data1 = array('country'=>$country);
+			 if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
+			  
+			   $fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('franchise_id'));  
+			     
+			 }
+
+	        
+
+	        $url = API_URL.'visacountry';
+        $ch = curl_init($url);
+        $data1 = array('from_country'=>$fromcountry->country,'to_country'=>$country);
 	        curl_setopt($ch, CURLOPT_POSTFIELDS,$data1);
 	        curl_setopt($ch, CURLOPT_HTTPHEADER, VISA_API);
 	        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	        $result = curl_exec($ch);
+
+	        print_r($result); exit;
 	        echo $result;
-       	 curl_close($ch);
+       	    curl_close($ch);
 		}else{
 			$result = array("status"=>"false");
-
 			echo json_encode($result);
-	         
 		}
 	}
+	
 	function get_all_visa_by_multi_country_id(){
+
 		$post = $this->input->post();
 		$country = $post["destination"];
 		$country = implode(',',$country);
-		
-		
 		if($post){
+
 			$url = API_URL.'getvisatype';
 	        $ch = curl_init($url);
 	        $data1 = array('country'=>$country);
@@ -239,11 +255,11 @@ class Reports extends MY_Controller
 	        $result = curl_exec($ch);
 	         echo $result;
        	 curl_close($ch);
-		}else{
-			$result = array("status"=>"false");
 
+		}else{
+
+			$result = array("status"=>"false");
 			echo json_encode($result);
-	         
 		}
 	}
 	function create_batch_of_enquiry(){
@@ -275,9 +291,9 @@ class Reports extends MY_Controller
 		$this->db->from(TBL_SUPPLIER_ADD_FRANCHISE);
 
 		if($this->session->userdata('user_role') == User_role::FRANCHISE){
-        $this->db->where('franchise_id',$this->session->userdata('user_id'));
-
+        	$this->db->where('franchise_id',$this->session->userdata('user_id'));
 	    }
+
 	    if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
 	        $this->db->where('enquiry_staff_id',$this->session->userdata('user_id'));
 	    }
@@ -285,6 +301,7 @@ class Reports extends MY_Controller
 		if($this->input->post('status') != ""){
 			$this->db->where('pool_status',$this->input->post('status'));
 		}	
+
 		$this->db->like('name', $this->input->post('term'));
 		$query = $this->db->get()->result();
 
@@ -292,10 +309,8 @@ class Reports extends MY_Controller
 
 		if(!empty($query)){ 
 			foreach ($query as $key => $value) {
-				
 					$data['name'] = $value->name; 
 					array_push($skillData, $data); 
-				
 			} 
 		} 
 		
@@ -307,12 +322,14 @@ class Reports extends MY_Controller
 		$this->db->select('email');
 		$this->db->from(TBL_SUPPLIER_ADD_FRANCHISE);
 		if($this->session->userdata('user_role') == User_role::FRANCHISE){
-        $this->db->where('franchise_id',$this->session->userdata('user_id'));
+         $this->db->where('franchise_id',$this->session->userdata('user_id'));
 
 	    }
+
 	    if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
 	        $this->db->where('enquiry_staff_id',$this->session->userdata('user_id'));
 	    }
+
 		if($this->input->post('status') != ""){
 			$this->db->where('pool_status',$this->input->post('status'));
 		}	

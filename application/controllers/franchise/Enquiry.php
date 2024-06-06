@@ -44,12 +44,13 @@ class Enquiry extends MY_Controller
 		$this->content->fetch_finalize_enquiry_data = $this->setting_model->fetch_pool_data(Enquiry_pool_status::FINALIZE);
 		$this->content->get_whatsup_template_data = $this->setting_model->get_whatsup_template_data();
 		$this->content->get_email_template_data = $this->setting_model->get_email_template_data();
-		$this->content->get_all_country  = $this->supplier_model->get_all_country();
+		$this->content->get_all_country = $this->supplier_model->get_all_country();
 		$this->content->get_descriptions_of_admin 	= 	$this->setting_model->get_descriptions_of_master_module();
 		$this->content->get_enquiry_type   = $this->setting_model->get_enquiry_type();
 		$this->content->get_all_itenerary_names = $this->setting_model->get_all_itenerary_names();
 		$this->content->get_all_drop_reason = $this->setting_model->get_all_drop_reason(Enquiry_pool_status::FINALIZE);
 		$this->content->get_all_staff_data = $this->setting_model->get_all_staff_data();
+		$this->content->company_permission = 	$this->setting_model->get_booking_profit();
 		$this->load_view('view_finalize_pool_data', $title);
 	}
 
@@ -67,19 +68,25 @@ class Enquiry extends MY_Controller
 		$today_date = date('Y-m-d');
 		$data['_view'] = $this->setting_model->fetch_all_todays_followup_data($today_date,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
 		
+		//echo '<pre>';
+		//print_r($data['_view']); exit;
 		$this->load->view('console/enquiry/follow_up/today_follow_up',$data);
 	}
+
 	function get_all_yesterday_follow_up_data(){
 		$yester_day_date = date('Y-m-d',strtotime('-1 day'));
 		$data['_view'] = $this->setting_model->fetch_all_todays_followup_data($yester_day_date,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
 		$this->load->view('console/enquiry/follow_up/yesterday_follow_up',$data);
 	}
+
 	function get_all_missed_follow_up_data(){
 		$yester_day_date = date('Y-m-d',strtotime('-2 days'));
 		$data['_view'] = $this->setting_model->fetch_all_yesterday_followup_data($yester_day_date,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
 		// $data['_view'] = $this->setting_model->get_all_enquiry_list_data();
+		
 		$this->load->view('console/enquiry/follow_up/missed_follow_up',$data);
 	}
+
 	function drop_pool_data(){
 		/** page level css & js * */
 		$this->content->extra_js  = array('jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min');
@@ -102,7 +109,7 @@ class Enquiry extends MY_Controller
 		$this->content->get_all_itenerary_names = $this->setting_model->get_all_itenerary_names();
 		$this->content->get_all_drop_reason = $this->setting_model->get_all_drop_reason(Enquiry_pool_status::DROP);
 		$this->content->get_all_staff_data = $this->setting_model->get_all_staff_data();
-
+		$this->content->company_permission      	= 	$this->setting_model->get_booking_profit();
 		$this->load_view('view_drop_pool_data', $title);
 	}
 
@@ -203,8 +210,6 @@ class Enquiry extends MY_Controller
 	}
 
 
-
-
 	function add()
 	{ 
 		/** page level css & js * */
@@ -227,6 +232,7 @@ class Enquiry extends MY_Controller
 
 		$this->load->view('console/enquiry/add_edit_new_enquiry', $data);
 	}
+
 	function index(){
 		
 		// xdebug($this->session->all_userdata());
@@ -274,7 +280,7 @@ class Enquiry extends MY_Controller
 		$this->content->get_offer   = 	$this->setting_model->get_current_offer();
 
 		$this->content->get_offer_count   = 	$this->setting_model->get_current_offer_count($this->content->get_offer->id);
-		
+		$this->content->company_permission      	= 	$this->setting_model->get_booking_profit();
 		$this->load_view('enquiry_list_view', $title);
 	}
 
@@ -298,12 +304,11 @@ class Enquiry extends MY_Controller
 			echo json_encode($fetch_all_pool_master_status);
 		}
 	}
+
 	function ajax_enquiry_number_exist()
 	{
 			$post = $this->input->post();
 		
-			
-			
 			$number_data = $this->setting_model->check_enquiry_number_exists($post['mobile'],$post['query_id']);
 			/*echo '<pre>';
 			print_r($number_data);*/
@@ -316,15 +321,14 @@ class Enquiry extends MY_Controller
 					echo json_encode(array('user_exist' => TRUE));
 			}
 	}
+
 	function send_whats_up_description(){
 		if($this->input->post()){
 			$get_template_data = $this->setting_model->fetch_whatsup_desc_by_id($this->input->post('w_template_id'));
 			$get_user_content_data = $this->setting_model->fetch_user_content_by_id($this->input->post('w_template_user_id'));
 
-			
-
 			$NAME = $get_user_content_data->name;
-			$FOLLOWODATE = $get_user_content_data->follow_up_date;
+			$NEWFOLLOWODATE = $get_user_content_data->follow_up_date;
 			
 			if($get_user_content_data->intersted_country != ""){
 				//$ICOUNTRY = $get_user_content_data->intersted_country;
@@ -362,8 +366,8 @@ class Enquiry extends MY_Controller
 				$VISATYPE = "";
 			}	
 			
-			$find = ['{{name}}','{{Follow_Up_Date}}','{{Intersted_Country}}','{{Visa_Type}}','&nbsp;','<p>','</p>'];
-			$replace = compact('NAME', 'FOLLOWODATE','ICOUNTRY','VISATYPE',' ','');
+			$find = ['{{name}}','{{Follow_Up_Date}}','{{Intersted_Country}}','{{Visa_Type}}','&nbsp;','<p>','</p>','<br>'];
+			$replace = compact('NAME', 'NEWFOLLOWODATE','ICOUNTRY','VISATYPE',' ','','','');
 			
 			$text_description = str_replace('&nbsp;', ' ', $get_template_data->description);
 
@@ -383,6 +387,7 @@ class Enquiry extends MY_Controller
 		echo json_encode($response);
 		die;	
 	}
+
 	function save_enquiry_data(){
 
 		if($this->input->post()){
@@ -411,12 +416,15 @@ class Enquiry extends MY_Controller
 				//'city' => implode(',',$this->input->post('city')),
 				//'visa_id' => implode(',',$this->input->post('visatype')),
 				'visa_id' => $this->input->post('visatype'),
+				'enquiry_name' => $this->input->post('enquiry_name'),
+				'visa_name' => $this->input->post('visatype_name'),
 				'language' => $this->input->post('language'),
 				's_description' => $this->input->post('s_description'),
 				'description' => $this->input->post('description'),
 				'follow_up_date' => $this->input->post('follow_up_date') != "" ? date('Y-m-d',strtotime($this->input->post('follow_up_date'))) : NULL,
 				//'intersted_country' => implode(',',$this->input->post('i_country')),
 				'intersted_country' => $intersted_country,
+				'intersted_country_name' => $this->input->post('intersted_country_name'),
 				'passport_no' => $this->input->post('passport_no'),
 				'p_valid_from' => $this->input->post('p_valid_from') != "" ? date('Y-m-d',strtotime($this->input->post('p_valid_from'))) : NULL,
 				'p_valid_to' => $this->input->post('p_valid_to') != "" ? date('Y-m-d',strtotime($this->input->post('p_valid_to'))) : NULL,
@@ -892,8 +900,8 @@ function editinquiry(){
 					$FOLLOWODATE = $user_data->follow_up_date;
 					$ICOUNTRY = $user_data->intersted_country;
 
-					$find = ['{{name}}','{{Follow_Up_Date}}','{{Intersted_Country}}'];
-					$replace = compact('NAME', 'FOLLOWODATE','ICOUNTRY');
+					$find = ['{{name}}','{{Follow_Up_Date}}','{{Intersted_Country}}','Visa_Type'];
+					$replace = compact('NAME', 'FOLLOWODATE','ICOUNTRY','VISATYPE');
 
 					$desc = str_replace($find, $replace, $maildescription);
 
@@ -1014,7 +1022,8 @@ function editinquiry(){
 	function service_charge_pull_status(){
 		
 		if($this->input->post()){
-			
+
+	 
 			 $currentuser = $this->supplier_model->get_main_franchise_id($this->session->userdata('user_id'));
                 $totalbalance = ($currentuser->balance-$this->input->post('service'));
 
@@ -1026,10 +1035,35 @@ function editinquiry(){
 
                 $user_id = $this->user_model->edit_data(TBL_USERS, $user, 'user_id', $id);
 
+
+                /* */ 
+
+                $enid =   $this->setting_model->get_supplier_form_data($this->input->post('pool_record_id'));
+
+
+			 if($this->session->userdata('user_role') == User_role::FRANCHISE){
+     				$fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('user_id'));
+				 }
+
+				 if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
+				   $fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('franchise_id'));  
+				 }	
+
+				 $tocountry = $enid->intersted_country_name;
+				 $enname = $enid->name;
+				 $visa_name = $enid->visa_name;
+				 $custo_no = $enid->mobile_no;
+
+				 $fromcountryname = $this->setting_model->get_api_country_by_id($fromcountry->country);
+				 
+				 $fromcname = $fromcountryname->countrydata[0]->name;
+				 $message = $fromcname.", ".$tocountry.", ".$visa_name.", ".$enname.", ".$custo_no;
+				 
                 $passtable = array();
                 $passtable['ref_id']                =       "";     
                 //$passtable['ref_type']              =       $this->input->post('origincountry').",".$this->input->post('destinationcountry');        
-                $passtable['ref_type']              =      "";        
+                $passtable['ref_type']              =      "";    
+                $passtable['booking_detail']        =      $message;    
                 $passtable['payment_type']          =       Payment_type::DEBIT; 
                 $passtable['service_type']          =       Service_type::VISA;
                 $passtable['user_id']               =       $this->session->userdata('user_id');

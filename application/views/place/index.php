@@ -6,7 +6,7 @@
            <div class="row">
 
             <div class="col-sm-5 col-md-5">
-             <div class="form-group input-inside">
+             <div class="form-group input-inside1">
                <label class="form-label">Select Country</label>
                <select class="form-select country_id" name="country_id" id="country_id" data-placeholder="Select Country">
                   <option value="">Select Country</option>

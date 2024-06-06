@@ -108,9 +108,10 @@ class Common extends MY_Controller
 
 
     }
+    
     function delete_supplier(){
 
-    	$id     = $this->input->post('id');
+    	    $id     = $this->input->post('id');
 			$row    = $this->input->post('row');
 			$table  = $this->input->post('table');
 			$module = $this->input->post('module');

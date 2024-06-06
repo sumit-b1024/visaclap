@@ -68,6 +68,7 @@ class Request extends MY_Controller
         
         $this->load->view('franchise/request/visa_table_view',$data);
     }
+
     function savebookmark(){
         $post = $this->input->post();
         //$bookmark = $this->setting_model->get_bookmark();
@@ -86,15 +87,15 @@ class Request extends MY_Controller
            
         echo json_encode($response);
             die;        
-        
     }
+    
     function deletebookmark(){
         $post = $this->input->post();
         if(!empty($post)){
        
             $this->setting_model->remove_bookmark($post['id']);
-       
             $response = array('status'=>'success');
+
         }else{
             $response = array('status'=>'error');
         }
@@ -123,13 +124,12 @@ class Request extends MY_Controller
         curl_close($ch);
 
     }
+
     function getvisadocument(){
 
-        
         $url = API_URL.'visacountry';
         $ch = curl_init($url);
         $data1 = array('from_country'=>$this->input->post('from_country'),'to_country'=>$this->input->post('to_country'));
-
         curl_setopt($ch, CURLOPT_POSTFIELDS,$data1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, VISA_API);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -137,8 +137,8 @@ class Request extends MY_Controller
         echo $result;
         curl_close($ch);
 
-
     }
+
     function getallvisatype(){
         $url = API_URL.'visatype';
         $ch = curl_init($url);
@@ -154,6 +154,7 @@ class Request extends MY_Controller
 
 
     }
+
     function getform_visafield(){
         $url = API_URL.'getform_visa';
         $ch = curl_init($url);
@@ -180,19 +181,14 @@ class Request extends MY_Controller
 
             $noof = $this->supplier_model->fetch_no_application($this->input->post('group_id'));
             $form_groups = $this->supplier_model->fetch_merge_column($this->input->post('group_id'));
-            
             $form_groups = array_column($form_groups, 'form_group');
-
-
 
             $data['origin_country'] = $data['fetch_application_data'][0]->origin_country;
             $data['destination_country'] = $data['fetch_application_data'][0]->destination_country;
             //$data['no_of_travellers'] = $noof[0]->no_of_travellers;
             $data['no_of_travellers'] = 1;
             $data['visa_name'] = $data['fetch_application_data'][0]->visa_name;
-           
 
-            
             $main_array = array();
 
             foreach($form_groups as $key => $group){    
@@ -249,7 +245,6 @@ class Request extends MY_Controller
 
     public function send_watsapp_of_enquiry(){
 
-          
 
             $post = $this->input->post();
             $phonenumber = $this->input->post('phone');
@@ -275,8 +270,6 @@ class Request extends MY_Controller
                 $country_visa_detail = json_decode($datav);
                 $value = $country_visa_detail->visaservice->id; 
                
-
-
 
 
                 $apiurl =  API_URL."getvisadetail";
@@ -510,7 +503,6 @@ class Request extends MY_Controller
 
     public function send_watsapp_of_application(){
 
-          
 
             $post = $this->input->post();
             $phonenumber = $this->input->post('phone');
@@ -565,7 +557,7 @@ class Request extends MY_Controller
                      $html2 .="Valid for : ".$country_visa[0]->visa_validity.""."%0A";
                      $html2 .="Time to get visa : ".$country_visa[0]->time_to_get_visa.""."%0A";
                      $html2 .="Visa Fee : ".$country_visa[0]->price.""."%0A";
-                     //$html2 .="Our Service Fees : ".$country_visa[0]->service_charge.""."%0A";
+                     $html2 .="Our Service Fees : ".$country_visa[0]->service_charge.""."%0A";
                      $html2 .="Description : ".$country_visa[0]->description.""."%0A";
 
                      /* document */ 

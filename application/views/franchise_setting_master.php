@@ -14,16 +14,12 @@
 
 		<!--app-content open-->
 		<main class="main_content">
-		    
-
 		            <div class="container-fluid px-3 px-md-4">
-            
-
 			          <div class="enquiry-wrap">
 			            <h4 class="primary-title1 mb-0"><?= toPropercase($title); ?></h4>
 			            
 			          </div>
-			        <hr style="width: 98%;">
+			        <hr style="width: 100%;">
 			        </div>
 		         <div class="container-fluid px-3 px-md-4">       
 						<mp:Content/>

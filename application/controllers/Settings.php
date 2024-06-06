@@ -349,8 +349,7 @@ class Settings extends MY_Controller
 			if(!empty($result)){
 			$response =  json_encode(array('status'=> 'success', 'data'=> $result));
 			}else{
-
-			$response = array('status'=>'failed','message' => 'Data Not avilable');
+            $response = array('status'=>'failed','message' => 'Data Not avilable');
 			}
 		}else{
 			$response = array('status'=>'failed','message' => 'Something Went Wrong.');
@@ -1178,6 +1177,33 @@ class Settings extends MY_Controller
 		$this->load_view('media_view', $title);
 	}
 
+	function company_permission() {
+		$title = 'Company Permission';
+		$this->content->title 	= $title;
+		$this->content->view      	= 	$this->setting_model->get_booking_profit();	
+        $this->load_view('company_permission', $title);
+	}
+
+
+	function save_company_permission(){
+
+		if($this->input->post()){
+		$post = $this->input->post();
+			
+			$domain_array = array(
+				'company_permission' => $this->input->post('val'),
+			);
+			if($this->input->post('profit_id')){
+				$this->setting_model->update_profit_data($domain_array,$this->input->post('profit_id'));
+				$response = array('status'=>'success','message' => 'Company Permission.');
+			}
+		}else{
+			$response = array('status'=>'error','message' => 'Something Went Wrong.');
+		}
+		echo json_encode($response);
+		die;
+	}
+
 	function remove_things(){
 		if($this->input->post('r_id')){
 			$this->db->set('is_delete',1);
@@ -1377,6 +1403,7 @@ class Settings extends MY_Controller
 		
 		
 		$this->content->domain 	= "page.hifyc.link";
+
 		$this->load_view('csdm-create-domain', $title);
 		
 	}

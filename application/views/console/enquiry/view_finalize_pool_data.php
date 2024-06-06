@@ -896,7 +896,7 @@ const app = createApp({
     },
     watch: {
       dataFromServer(newValue, oldValue) {
-         alert();
+          
          if(this.dataTable)
             {
 

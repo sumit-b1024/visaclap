@@ -810,6 +810,7 @@ class Settings extends MY_Controller
 			show_400();
 		}
 	}
+	
 function remove_things(){
 		if($this->input->post('r_id')){
 			$this->db->set('is_delete',1);

@@ -26,7 +26,7 @@
              </div>
 
              <div class="col-sm-3 col-md-2 mb-1">
-               <div class="form-group input-inside">
+               <div class="form-group input-inside1">
                 <label class="form-label">Select Language</label>
                  <select class="language form-select" name="language">
                   <option value="">Select Language</option>
@@ -41,14 +41,14 @@
              <div class="col-sm-3 col-md-3">
               <div class="form-group input-inside">
                 <label class="form-label"> Intersted Country</label>
-                 <select name="i_country[]" multiple="multiple" id="i_country" data-placeholder="Intersted Country" class="i_country form-select">
+                 <select name="i_country[]" id="i_country" data-placeholder="Intersted Country" class="i_country form-select">
                 </select>
               </div>
             </div>
             <div class="col-sm-3 col-md-3">
                 <div class="form-group input-inside">
                     <label class="form-label">Select Visa</label>
-                   <select class="city  visatype form-select"  id="visatype" multiple name="visatype[]" data-placeholder="Select Visa">
+                   <select class="city  visatype form-control "  id="visatype" name="visatype[]" data-placeholder="Select Visa">
                     </select>
                 </div>
             </div>
@@ -75,7 +75,7 @@
            </div>
          </div>
 
-         <div class="col-sm-2 col-md-2 input-inside">
+         <div class="col-sm-2 col-md-2 input-inside1">
            <div class="form-group">
             <label class="form-label">Enquiry Type</label>
             <select class="enquiry_type  form-select" name="enquiry_type">
@@ -87,7 +87,7 @@
         </div>
       </div>
 
-      <div class="col-sm-2 col-md-2 input-inside">
+      <div class="col-sm-2 col-md-2 input-inside1">
            <div class="form-group">
             <label class="form-label">Drop Reason</label>
             <select class=" form-select reason_type" name="reason_type">
@@ -99,7 +99,7 @@
           </select>
         </div>
       </div>
-      <div class="col-sm-3 col-md-2 input-inside">
+      <div class="col-sm-3 col-md-2 input-inside1">
          <div class="form-group">
             <label class="form-label ">Staff</label>
             <select class="enquiry_staff_id  form-select"  name="enquiry_staff_id" value="<?= $enquiry->intersted_country ?>" data-placeholder="Select Staff">
@@ -392,6 +392,7 @@ crossorigin="anonymous"
        success:function(data){
         
         if(data.code != 500){
+          $('#i_country').append('<option value="">Select</option>');
           $.each(data.message, function (key, val) {
              $("#i_country").append('<option value="'+val.id+'">'+val.name+'</option>');
          });
@@ -554,7 +555,8 @@ $(document).on('submit','.followup_form',function(e){
         // if(destination){
             $.ajax({
                 type:"POST",
-                url: base_url + "franchise/reports/get_all_visa_by_multi_country_id",
+                //url: base_url + "franchise/reports/get_all_visa_by_multi_country_id",
+                url: base_url + "franchise/reports/get_all_visa_by_country_id",
                 data : {destination : destination},
                 dataType : 'JSON',
                 success:function(data){
@@ -562,22 +564,18 @@ $(document).on('submit','.followup_form',function(e){
                     if(data.status != "false"){
                     if(data){
                         $(".visatype").empty();
-                        $(".visatype").append('<option>Select Visa</option>');
+                        $(".visatype").append('<option value="">Select Visa</option>');
+                        //alert(data.message[0].type_of_visa);
                         $.each(data.message,function(key,value){
-                          
-                            $(".visatype").append('<option value="'+value.id+'">'+value.name+'</option>');
+
+                            
+                            $(".visatype").append('<option value="'+data.message[key].visa_type_id+'">'+data.message[key].type_of_visa+'</option>');
                         });
-
-
-                        $('.enquiry_page_report .visatype ').select2({
-                          dropdownParent: $('.enquiry_page_report'),
-                          width: "100%"
-                       });
                     }else{
                         $(".visatype").empty();
                     }
                     }else{
-                        $("#visatype").empty();
+                        $(".visatype").empty();
                     }
                 }
             });

@@ -12,7 +12,7 @@
 						<div class="col-sm-6 col-md-6 input-inside">
 							<label class="form-label"> Password <span class="text-red">*</span></label>
 							<div class="wrap-input100 validate-input input-group" id="Password-toggle">
-								<a href="javascript:void(0)" class="input-group-text bg-white text-muted toggle-password">
+								<a href="javascript:void(0)" class="input-group-text bg-white text-muted toggle-cpassword">
 									<i class="fa fa-eye" aria-hidden="true"></i>
 								</a>
 								<input class="input100 border-start-0 form-control ms-0" type="password" placeholder="Password" name="password" id="password">
@@ -62,17 +62,38 @@ referrerpolicy="no-referrer"
 		 $(".toggle-password").click(function() {
     // Find the password input field using its ID
     var passwordField = $("#c_password");
+    
 
     // Toggle the password visibility by changing the input type attribute
     if (passwordField.attr("type") === "password") {
-      passwordField.attr("type", "text");
-    } else {
       passwordField.attr("type", "password");
+    } else {
+      passwordField.attr("type", "text");
     }
 
     // Toggle the eye icon by changing the class "fa-eye" to "fa-eye-slash" and vice versa
     $(this).find("i").toggleClass("fa-eye fa-eye-slash");
   });
+
+		 $(".toggle-cpassword").click(function() { 
+    // Find the password input field using its ID
+    var password = $("#password");
+
+    
+    // Toggle the password visibility by changing the input type attribute
+    if (password.attr("type") === "password") {
+      password.attr("type", "password");
+    } else {
+      password.attr("type", "text");
+    }
+
+    // Toggle the eye icon by changing the class "fa-eye" to "fa-eye-slash" and vice versa
+    $(this).find("i").toggleClass("fa-eye fa-eye-slash");
+  });
+
+
+
+
 		$('#pwd_reset_form').validate({
 			rules : {
 				password : {

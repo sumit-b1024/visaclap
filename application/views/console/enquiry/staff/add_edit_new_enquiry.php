@@ -57,6 +57,7 @@
 									<?php } ?>
 
 								</select>
+								<input type="hidden" name="enquiry_name" value="<?= isset($enquiry->enquiry_name) && !empty($enquiry->enquiry_name) ? $enquiry->enquiry_name : set_value('enquiry_name'); ?>" class="enquiryname" />
 							</div>
 						</div>
 
@@ -108,6 +109,7 @@
 									<?php } ?> -->
 								</select>
 							</div>
+							<input type="hidden" name="intersted_country_name" class="intersted_country_name" value="<?= isset($enquiry->intersted_country_name) && !empty($enquiry->intersted_country_name) ? $enquiry->intersted_country_name : set_value('intersted_country_name'); ?>">
 						</div>
 						<div class="col-sm-6 col-md-6 selectvisa" style="display:none;">
 							<div class="form-group input-inside">
@@ -115,6 +117,7 @@
 								<select class="form-control city select2-show-search form-select" id="visatype" name="visatype" data-placeholder="Select Visa">
 								</select>
 							</div>
+								<input type="hidden" name="visatype_name" class="visatype_name" value="<?= isset($enquiry->visa_name) && !empty($enquiry->visa_name) ? $enquiry->visa_name : set_value('visa_name'); ?>">
 						</div>
 						<!-- <div class="col-sm-6 col-md-6">
 							<div class="form-group">
@@ -216,6 +219,9 @@ integrity="sha512-37T7leoNS06R80c8Ulq7cdCDU5MNQBwlYoy1TX/WUsLFC2eYNqtKlV0QjH7r8J
 crossorigin="anonymous"
 referrerpolicy="no-referrer"
 ></script>
+<?php $countryid =  $enquiry->intersted_country;?>
+<?php $visaid =  $enquiry->visa_id;?>
+<?php $intersted_country_name =  $enquiry->intersted_country_name;?>
 <script type="text/javascript">
 	function goBack() {
 		var continue_to = base_url + 'franchise/enquiry';
@@ -234,14 +240,30 @@ referrerpolicy="no-referrer"
         mode: 'cors',
        success:function(data){
         var countryidarray = countryid.split(',');
+        var countrylen = countryidarray.length;
         if(data.code != 500){
+          $(".i_country").append('<option>Select Country</option>');
           $.each(data.message, function (key, val) {
             let selected="";
               if(jQuery.inArray(val.id, countryidarray) != -1) {
                     selected = 'selected';
+                    console.log(val.id);
+                }else{
+                		selected = '';
                 }
-             $("#i_country").append('<option value="'+val.id+'" '+selected+'>'+val.name+'</option>');
+
+             $(".i_country").append('<option value="'+val.id+'" '+selected+'>'+val.name+'</option>');
+
          });
+
+          if(countrylen > 1){
+          	//$('.i_country').trigger('change');
+          	$('.i_country').select2({multiple: true});
+          	$('.i_country').val(countryidarray);
+          	$('.i_country').attr('name', 'i_country[]');
+          	$('.i_country').trigger('change');
+          	$('.selectvisa').hide();
+          }
         }else{
          alert("Please Enter Domain key");
       }
@@ -292,11 +314,11 @@ referrerpolicy="no-referrer"
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
-							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+								let selected="";
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'">'+data.message[key].type_of_visa+'</option>');
 						});
 					}else{
 						$("#visatype").empty();
@@ -399,7 +421,7 @@ $('body').on('change blur', '.mobile_no', function() {
 
 	$('body').on('change', '.enquiry_type', function() {
 		var enquiry_type = $("#enquiry_type option:selected").val();
-		
+		var enquiry_type_name = $("#enquiry_type option:selected").text();
 	  	if(enquiry_type == '32'){
 	  		//$('.i_country').prop('multiple', false);
 	  		$('.multiple_country ').select2({
@@ -416,6 +438,21 @@ $('body').on('change blur', '.mobile_no', function() {
 	  		$('.i_country').attr('name', 'i_country[]');
 	  		$('.selectvisa').hide();
 	  	}
+	  	$('.enquiryname').val(enquiry_type_name);
+	  });
+
+	 $('body').on('change', '.i_country', function() {
+	  	//var int_country_name = $("#i_country option:selected").text();
+	  	var items = $("#i_country option:selected").map((i, el) => el.textContent.trim()).get();
+	  	$('.intersted_country_name').val(items.join());
+
+	  });
+	  $('body').on('change', '#visatype', function() {
+	  	//var int_country_name = $("#i_country option:selected").text();
+	  	
+	  	var visatype_name = $("#visatype option:selected").text();
+	  	$('.visatype_name').val(visatype_name);
+
 	  });
 
 	$(document).ready(function() {

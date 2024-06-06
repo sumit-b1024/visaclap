@@ -72,9 +72,9 @@ function edit()
 		$this->content->view      	= 	$this->setting_model->get_domain_details($id);	
 		$this->load_view('domain_view', $title);
 	}
+
 	function remove_domain(){
 	    
-
 	    if($this->input->post('r_id')){
 	        $update_status = $this->setting_model->remove_domain($this->input->post('r_id'));
 	        $response = array('status'=> 'success','msg' => "Domain ( Removed Successfully");

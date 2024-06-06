@@ -145,6 +145,7 @@
 				},'s_mobile':{
 					required: true,
 				},
+
 			},messages:{
 				's_name' :{
 					required: "please enter name",

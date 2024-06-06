@@ -9,7 +9,7 @@
           <span class="custom-control-label"></span>
         </label>
       </th>
-      <th width="wd-15p border-bottom-0" > Name123 </th>
+      <th width="wd-15p border-bottom-0" > Name </th>
       <th width="wd-15p border-bottom-0" > Mobile </th>
       <th width="wd-15p border-bottom-0" > Created </th>
       

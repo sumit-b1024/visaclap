@@ -5,7 +5,7 @@
 
 		foreach ($fetch_all_images as $key => $value) { ?>
 			<div class="col-2">
-				<img src="<?= base_url("$value->img_name") ?>" class="img-rounded" >
+				<img src="<?= base_url("$value->img_name") ?>" class="img-rounded" style="width:100%;">
 			</div>
 		<?php } } else{ ?>
 

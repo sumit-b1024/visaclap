@@ -151,7 +151,7 @@ class Apply_visa extends MY_Controller
 
                       if  (array_key_exists("month",$allvalues2) && array_key_exists("day",$allvalues2) && array_key_exists("year",$allvalues2)){
 
-                           if($allvalues2['month'][$i] !=  "" && $allvalues2['day'][$i] !=  "" && $allvalues2['year'][$i] !=  ""){
+                        if($allvalues2['month'][$i] !=  "" && $allvalues2['day'][$i] !=  "" && $allvalues2['year'][$i] !=  ""){
                              $date = $allvalues2['month'][$i]."-".$allvalues2['day'][$i]."-".$allvalues2['year'][$i];
                              $value = $date;
                              $add_array = array('key' => $key2,'value' => $value,'form_group'=>$key1); 

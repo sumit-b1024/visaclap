@@ -2,6 +2,9 @@
 	.error{
 		color: #e23e3d;
 	}
+	label.error{
+		color: #e23e3d;
+	}
 </style>
 <div class="row">
 	<div class="col-md-12 col-xl-12">

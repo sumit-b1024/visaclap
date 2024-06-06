@@ -34,7 +34,7 @@
        </div>
       </div>
       <div class="col-sm-12 col-md-2 mb-1">
-       <div class="form-group input-inside">
+       <div class="form-group input-inside1">
         <label class="form-label">Type</label>
         <select class="form-select form-select" name="type" >
             <option value="">Type</option>
@@ -78,7 +78,7 @@
        </div>
       </div>
       <div class="col-sm-12 col-md-2 mb-1">
-       <div class="form-group input-inside">
+       <div class="form-group input-inside1">
         <label class="form-label">Type</label>
         <select class="form-select form-select" name="type" >
             <option value="">Type</option>

@@ -79,7 +79,7 @@ class Enquiry extends MY_Controller
 		//print_r($data['_view']); exit;
 		$this->load->view('console/enquiry/follow_up/missed_follow_up',$data);
 	}
-	function drop_pool_data(){
+	function drop_pool_data(){ 
 		/** page level css & js * */
 		$this->content->extra_js  = array('jquery.min','jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min');
 		$this->content->extra_css = array('custom');
@@ -98,6 +98,7 @@ class Enquiry extends MY_Controller
 		$this->content->get_all_country   = 	$this->supplier_model->get_all_country();
 		$this->content->get_enquiry_type   = 	$this->setting_model->get_enquiry_type();
 		$this->content->get_all_drop_reason = $this->setting_model->get_all_drop_reason(Enquiry_pool_status::DROP);
+		$this->content->company_permission      	= 	$this->setting_model->get_booking_profit();
 		$this->load_view('view_drop_pool_data', $title);
 	}
 
@@ -143,7 +144,7 @@ class Enquiry extends MY_Controller
 	function add()
 	{ 
 		/** page level css & js * */
-		$this->content->extra_js  = array('custom_for_all');
+		$this->content->extra_js  = array('custom_for_all','common');
 		$this->content->extra_css = array('custom');
 
 		$title = 'Add Enquiry';
@@ -169,7 +170,7 @@ class Enquiry extends MY_Controller
 
 
 		/** page level css & js * */
-		$this->content->extra_js  = array('jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min','daterangepicker/moment.min','daterangepicker/daterangepicker','custom_for_all');
+		$this->content->extra_js  = array('jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min','daterangepicker/moment.min','daterangepicker/daterangepicker','custom_for_all','common');
 		$this->content->extra_css = array('custom','daterangepicker');
 		$title = '';
 		$this->content->breadcrumb = array(
@@ -192,6 +193,7 @@ class Enquiry extends MY_Controller
 		$this->content->get_descriptions_of_admin 	= 	$this->setting_model->get_descriptions_of_master_module();
 		$this->content->get_offer   = 	$this->setting_model->get_current_offer();
 		$this->content->get_offer_count   = 	$this->setting_model->get_current_offer_count($this->content->get_offer->id);
+		$this->content->company_permission      	= 	$this->setting_model->get_booking_profit();
 		$this->load_view('enquiry_list_view', $title);
 	}
 
@@ -249,10 +251,13 @@ class Enquiry extends MY_Controller
 				//'city' => $this->input->post('city'),
 				'language' => $this->input->post('language'),
 				'visa_id' => $this->input->post('visatype'),
+				'enquiry_name' => $this->input->post('enquiry_name'),
+				'visa_name' => $this->input->post('visatype_name'),
 				's_description' => $this->input->post('s_description'),
 				'description' => $this->input->post('description'),
 				'follow_up_date' => $this->input->post('follow_up_date') != "" ?date('Y-m-d',strtotime($this->input->post('follow_up_date'))) : NULL,
 				'intersted_country' => $intersted_country,
+				'intersted_country_name' => $this->input->post('intersted_country_name'),
 				'passport_no' => $this->input->post('passport_no'),
 				'p_valid_from' => $this->input->post('p_valid_from') != "" ?date('Y-m-d',strtotime($this->input->post('p_valid_from'))) : NULL,
 				'p_valid_to' => $this->input->post('p_valid_to') != "" ?date('Y-m-d',strtotime($this->input->post('p_valid_to'))) : NULL,
@@ -617,8 +622,10 @@ class Enquiry extends MY_Controller
 
 	function service_charge_pull_status(){
 		if($this->input->post()){
-			 $currentuser = $this->supplier_model->get_main_franchise_id($this->session->userdata('franchise_id'));
-                $totalbalance = ($currentuser->balance-$this->input->post('service'));
+
+
+			 	$currentuser = $this->supplier_model->get_main_franchise_id($this->session->userdata('franchise_id'));
+             	$totalbalance = ($currentuser->balance-$this->input->post('service'));
 
                 $id   = $this->session->userdata('franchise_id');
                 $user = array();
@@ -627,11 +634,36 @@ class Enquiry extends MY_Controller
                 $user['updated_on']             =       time();
 
                 $user_id = $this->user_model->edit_data(TBL_USERS, $user, 'user_id', $id);
+                /* message get data */ 
+
+                  $enid =   $this->setting_model->get_supplier_form_data($this->input->post('pool_record_id'));
+
+
+			 if($this->session->userdata('user_role') == User_role::FRANCHISE){
+     				$fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('user_id'));
+				 }
+
+				 if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
+				   $fromcountry = $this->setting_model->get_user_country_id($this->session->userdata('franchise_id'));  
+				 }	
+
+				 $tocountry = $enid->intersted_country_name;
+				 $enname = $enid->name;
+				 $visa_name = $enid->visa_name;
+				 $custo_no = $enid->mobile_no;
+
+				 $fromcountryname = $this->setting_model->get_api_country_by_id($fromcountry->country);
+				 
+				 $fromcname = $fromcountryname->countrydata[0]->name;
+				 $message = $fromcname.", ".$tocountry.", ".$visa_name.", ".$enname.", ".$custo_no;
+
+
 
                 $passtable = array();
                 $passtable['ref_id']                =       "";     
                 //$passtable['ref_type']            =       $this->input->post('origincountry').",".$this->input->post('destinationcountry');        
-                $passtable['ref_type']              =       "";        
+                $passtable['ref_type']              =       "";
+                $passtable['booking_detail']        =       $message;        
                 $passtable['payment_type']          =       Payment_type::DEBIT; 
                 $passtable['service_type']          =       Service_type::VISA;
                 $passtable['user_id']               =       $this->session->userdata('franchise_id');

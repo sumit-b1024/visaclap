@@ -9,7 +9,7 @@
 					<div class="row">
 
 						<div class="col-sm-6 col-md-6">
-							<div class="form-group input-inside">
+							<div class="form-group input-inside1">
 								<label class="form-label">Country <span class="text-red">*</span></label>
 								<select class="form-control country form-select " name="country" id="country" data-placeholder="Select Country" >
 									<option value="">Select Country</option>

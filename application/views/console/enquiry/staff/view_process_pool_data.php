@@ -1,5 +1,5 @@
 <button type="button" class="btn btn-danger btn-sm process_pool_send_mail" style="display:none;"><i class="fa fa-send"></i> Send Mail</button>
-<br>
+
 <br>
 <table class="table table-bordered text-nowrap border-bottom" id="responsive_process_pool">
   <thead>
@@ -66,23 +66,24 @@
          echo '('.$view->enquiry_type_name.")"; 
        }
     if($view->intersted_country != ""){
-       $country = explode(",",$view->intersted_country);
+       /*$country = explode(",",$view->intersted_country);
        $allcountryname = array();
         for($i=0;$i<count($country);$i++){ //echo $country[$i]; exit;
            $from = $this->setting_model->get_api_country_by_id($country[$i]);
            $allcountryname[] = $from->countrydata[0]->name;
          } 
-         echo ' ('.implode(",", $allcountryname).')';
-       
+         echo ' ('.implode(",", $allcountryname).')';*/
+       echo '('.$view->intersted_country_name.")";
       }
        if($view->visa_id != ""){
-       $visaid = explode(",",$view->visa_id);
-       $allvisaname = array();
-        for($j=0;$j<count($visaid);$j++){ 
-             $visaidval = $this->setting_model->get_api_visaname_by_id($visaid[$j]);
-            $allvisaname[] =  $visaidval->visaname->name;
-         } 
-        echo ' ('.implode(",", $allvisaname).')';
+       // $visaid = explode(",",$view->visa_id);
+       // $allvisaname = array();
+       //  for($j=0;$j<count($visaid);$j++){ 
+       //       $visaidval = $this->setting_model->get_api_visaname_by_id($visaid[$j]);
+       //      $allvisaname[] =  $visaidval->visaname->name;
+       //   } 
+       //  echo ' ('.implode(",", $allvisaname).')';
+        echo '('.$view->visa_name.")";
       }
       
     

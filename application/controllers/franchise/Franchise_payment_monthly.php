@@ -2,10 +2,10 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 if(IS_LIVE == TRUE){
-				require_once (APPPATH . 'libraries/razorpay/razorpay-php/Razorpay.php');
-				}else{
-				require_once (APPPATH . 'libraries\razorpay\razorpay-php\razorpay.php');
-				}
+require_once (APPPATH . 'libraries/razorpay/razorpay-php/Razorpay.php');
+}else{
+require_once (APPPATH . 'libraries\razorpay\razorpay-php\razorpay.php');
+}
 
 
 use Razorpay\Api\Api;
@@ -84,12 +84,13 @@ class Franchise_payment_monthly extends CI_Controller {
 			$api = new Api(RAZOR_KEY, RAZOR_SECRET_KEY);
 			
 
-		try {
+		try { 
 				$attributes = array(
 					'razorpay_order_id' => $_SESSION['razorpay_order_id'],
 					'razorpay_payment_id' => $_POST['razorpay_payment_id'],
 					'razorpay_signature' => $_POST['razorpay_signature']
 				);
+
 				$api->utility->verifyPaymentSignature($attributes);
 
 				$datarecord = $api->payment->fetch($_POST['razorpay_payment_id']);
@@ -118,8 +119,8 @@ class Franchise_payment_monthly extends CI_Controller {
 				$currentuser = $this->supplier_model->get_main_franchise_id($this->session->userdata('user_id'));
 				$totalbalance = ($currentuser->balance+$_SESSION['payable_amount']);
 
-/*
-				$pastdate = $this->setting_model->get_user_last_payment_date($currentuser->user_id);
+				/*
+			   $pastdate = $this->setting_model->get_user_last_payment_date($currentuser->user_id);
 
                $currentdate = date("Y-m-d",time());
                $pastdate = $pastdate->payment_date;
@@ -129,11 +130,10 @@ class Franchise_payment_monthly extends CI_Controller {
                 }*/
 
 
-
 				$id = $this->session->userdata('user_id');
 				$user = array();
 				$user['user_id'] 			    = 		$this->session->userdata('user_id');
-				$user['balance']     			= 		$totalbalance;		
+				$user['balance']     			= 		$totalbalance;
 				$user['updated_on'] 			= 		time();
 				$user_id = $this->user_model->edit_data(TBL_USERS, $user, 'user_id', $id);
 
@@ -152,7 +152,7 @@ class Franchise_payment_monthly extends CI_Controller {
 				
 				$passbookid = $this->setting_model->passbookstore($passtable);
 
-			} catch(SignatureVerificationError $e) {
+			} catch(SignatureVerificationError $e) { 
 				
 				$success = false;
 				$error = 'Razorpay_Error : ' . $e->getMessage();
@@ -172,6 +172,7 @@ class Franchise_payment_monthly extends CI_Controller {
 			redirect(base_url().'franchise/globel_setting/monthlysuccess');
 		}
 		else {
+
 			redirect(base_url().'franchise/globel_setting/paymentFailed');
 		}
 	}

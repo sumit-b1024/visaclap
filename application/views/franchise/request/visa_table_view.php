@@ -6,6 +6,8 @@ $action_access       =   [User_role::SUPER_ADMIN,User_role::FRANCHISE];
  <thead>
     <tr>
       <!-- <th class="wd-15p border-bottom-0">Index</th> --> 
+      <th class="wd-15p border-bottom-0" style="width:10%">Name</th>
+      <th class="wd-15p border-bottom-0" style="width:10%">Number</th>
       <th class="wd-15p border-bottom-0" style="width:10%">Origin</th>
       <th class="wd-15p border-bottom-0" style="width:30%">Destination</th>
       <th class="wd-15p border-bottom-0" style="width:10%">Date</th>
@@ -21,6 +23,13 @@ $action_access       =   [User_role::SUPER_ADMIN,User_role::FRANCHISE];
      ?>
      <tr>
       <!-- <td><?= $index++; ?></td> -->
+      <td>
+          <?php 
+          $ename = $this->setting_model->get_enquiry_name($view->passing);
+         echo  $ename->name;
+           ?>
+      </td>
+      <td><?= $view->passing; ?></td>
       <td><?= $view->origin_country; ?></td>
       <td><?= $view->destination_country; ?></td>
       <td><?= date("d-m-Y",strtotime($view->created_at)); ?></td>

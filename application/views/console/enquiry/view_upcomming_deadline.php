@@ -130,7 +130,6 @@ crossorigin="anonymous"
 <script>
 
   $('.passport_date').datepicker({
-      showOtherMonths: true,
       selectOtherMonths: true,
     });
   $(document).ready(function() {
@@ -182,6 +181,8 @@ get_upcomming_deadline_records();
          }
       });
    }
+
+   
    $(document).on('click', '.next15',function(e){
       get_upcomming_deadline_records('+15'); 
    });

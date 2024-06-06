@@ -14,7 +14,7 @@
 					<div class="row">
 						<div class="col-sm-6 col-md-6">
 							<div class="form-group input-inside">
-								<label class="form-label"> Name123 <span class="text-red">*</span></label>
+								<label class="form-label"> Name <span class="text-red">*</span></label>
 								<input type="text" name="name" id="name" class="form-control" placeholder="Enter Name" value="<?= isset($enquiry) && !empty($enquiry->name) ? $enquiry->name : set_value('name'); ?>" disabled/>
 								<span id="error_alter_name" class="small text-danger"></span>
 							</div>
@@ -308,10 +308,10 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
 							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'" '+selected+'>'+data.message[key].type_of_visa+'</option>');
 
 						});
 					}else{
@@ -341,10 +341,10 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
 							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'" '+selected+'>'+data.message[key].type_of_visa+'</option>');
 							
 
 						});

@@ -94,6 +94,7 @@ class Itenerary extends MY_Controller
 			return;
 		}
 	}
+
 	function store_tenerary_data(){
 		$post = $this->input->post();
 		if($post){
@@ -227,6 +228,7 @@ class Itenerary extends MY_Controller
 		echo json_encode($response);
 		return;
 	}
+
 	function delete_itenerary_data(){
 		if($this->input->post('id')){
 			$this->db->set('is_delete',1);
@@ -239,6 +241,7 @@ class Itenerary extends MY_Controller
 		echo json_encode($response);
 		return;
 	}
+
 	function get_des_by_name(){
 		if($this->input->post('r_id')){
 			$get_all_desc = $this->setting_model->get_all_desc_names($this->input->post('r_id'));
@@ -262,6 +265,7 @@ class Itenerary extends MY_Controller
 			$this->load->view('console/itenerary/view_itenerary_modal_view',$data);
 		}
 	}
+	
 	function get_titles_by_cc(){
 		$post = $this->input->post();
 		if(isset($post) && $post['destination'] > 0 && isset($post) && $post['city'] == ""){

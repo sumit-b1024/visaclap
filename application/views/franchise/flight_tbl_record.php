@@ -11,7 +11,6 @@
     -webkit-animation: spin 2s linear infinite;
     animation: spin 2s linear infinite;
  }
-
 </style>
 <?php if($status == 1){ ?>
    <?php if(isset($country_visa) && !empty($country_visa)){ ?>

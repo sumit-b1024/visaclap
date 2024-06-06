@@ -7,8 +7,6 @@ require_once (APPPATH . 'libraries\razorpay\razorpay-php\razorpay.php');
 }
 
 
-
-
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
 
@@ -618,6 +616,7 @@ class Globel_setting extends MY_Controller
 		$this->load_view('view_passbook_history', $title);
 
 	}
+	
 	public function getpassbookrecord()
 	{
 		$form = $this->input->post('from');

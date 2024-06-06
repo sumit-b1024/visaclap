@@ -24,7 +24,7 @@
 <input type="text" name="latitude" id="latitude" class="form-control">
 </div>
 <div class="form-group" id="long_area">
-<label for="latitude"> Longitude </label>
+<label for="longitude"> Longitude </label>
 <input type="text" name="longitude" id="longitude" class="form-control">
 </div>
 </div>

@@ -19,7 +19,7 @@
       </div>
 
       <div class="col-sm-3 col-md-3">
-       <div class="form-group input-inside">
+       <div class="form-group input-inside1">
         <label class="form-label">Select Status</label>
         <select class="s_status form-select" name="s_status">
          <option value="">Select Status</option>
@@ -124,7 +124,7 @@
     get_all_pool_data();
 
     $('.passport_date').datepicker({
-     showOtherMonths: true,
+     //showOtherMonths: true,
      selectOtherMonths: true,
     });
     $(document).on('submit', '.pool_page_report',function(e){

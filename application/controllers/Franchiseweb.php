@@ -42,6 +42,7 @@ class Franchiseweb extends MY_Controller
 			  
 			$this->load->view('fronted/'.$template.'/index',$data);
 	}
+	
 	function get_tourist($fransme="",$country="")
 	{
 			 

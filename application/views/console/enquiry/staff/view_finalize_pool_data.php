@@ -40,7 +40,8 @@
 <div class="col-sm-3 col-md-2 input-inside">
    <div class="form-group">
     <label class="form-label"> Intersted Country</label>
-    <select class="form-control i_country select2-show-search form-select" id="i_country" name="i_country[]" multiple data-placeholder="Select Intersted Country">
+    <select name="i_country[]" id="i_country" data-placeholder="Intersted Country" class="i_country select2-show-search form-select">
+                </select>
     <!--  <?php foreach ($get_all_country as $key => $value) { ?>
       <option value="<?= $value->id ?>"><?= $value->name.'  ('.$value->sortname.')'; ?></option>
    <?php } ?> -->
@@ -123,19 +124,19 @@
         <div class="card-body">
            <form class="detail_search">
             <div class="row">
-                <div class="col-sm-2 col-md-2 input-inside">
+                <div class="col-sm-2 col-md-3 input-inside">
                    <div class="form-group">
                       <label class="form-label">Name</label>
                       <input class="form-control name" id="name" name="uname" placeholder="Name" type="text">
                   </div>
               </div>
-              <div class="col-sm-2 col-md-2 input-inside">
+              <div class="col-sm-2 col-md-3 input-inside">
                  <div class="form-group">
                     <label class="form-label">Email</label>
                     <input class="form-control email" id="email" name="email" placeholder="Email" type="text">
                  </div>
               </div>
-              <div class="col-sm-2 col-md-2 input-inside">
+              <div class="col-sm-2 col-md-3 input-inside">
                  <div class="form-group">
                     <label class="form-label">Number</label>
                     <input class="form-control number" id="number" name="number" placeholder="Number" type="text">
@@ -331,6 +332,7 @@ referrerpolicy="no-referrer"
        success:function(data){
         
         if(data.code != 500){
+         $('#i_country').append('<option value="">Select</option>');
           $.each(data.message, function (key, val) {
              $("#i_country").append('<option value="'+val.id+'">'+val.name+'</option>');
          });

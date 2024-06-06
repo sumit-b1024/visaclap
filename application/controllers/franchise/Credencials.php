@@ -28,6 +28,7 @@ class Credencials extends MY_Controller
         $this->content->get_cred    =   $this->setting_model->get_all_cred($this->session->userdata('user_id'));
         $this->load_view('view_cred', $title);
     }
+    
     public function add(){
       $this->content->extra_js  = array('custom','input-mask/jquery.mask.min','bootstrap/js/popper.min','select2.full.min', 'select2');
       $this->content->extra_css = array('custom');

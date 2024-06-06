@@ -38,6 +38,7 @@ class Flightreport extends MY_Controller
            $this->load->view('franchise/flightreport/flight_report_table',$data);
         
     }
+    
     function generate_booking_detail_report(){  
         if($this->input->post()){
             $post = $this->input->post();
@@ -47,6 +48,7 @@ class Flightreport extends MY_Controller
             $this->load->view('franchise/flightreport/flight_report_table',$data);
         }
     }
+
     function bookingfulldetail(){  
            $post = $this->input->post();
 
@@ -54,6 +56,7 @@ class Flightreport extends MY_Controller
            $this->load->view('franchise/flightreport/flight_subdetail_table',$data);
         
     }
+
     function get_all_airportlist(){
 
         $post = $this->input->post();
@@ -72,6 +75,7 @@ class Flightreport extends MY_Controller
             return;
         
     }
+    
     function viewticket(){  
          $title = 'Ticket Detail';
         $this->content->breadcrumb = array(

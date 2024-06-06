@@ -32,7 +32,7 @@
 			            </div> -->
 			          </div>
 			        </div>
-			         <hr style="width: 98%;">
+			         <hr style="width: 100%;">
 		            <div class="container-fluid px-3 px-md-4">  
 						<mp:Content/>
 						 </div>

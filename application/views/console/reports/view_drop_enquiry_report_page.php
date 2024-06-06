@@ -255,7 +255,11 @@ $(document).on('click','.view_application',function(){
 
 
   $(document).on('click', '.new_change_process_pool_status', function () {
+
    $('.pool_description').val('');
+
+   var cpermission = '<?php echo $company_permission->company_permission ?>';
+
    var btn_val = $(this).val();
    var pool_record_id = $(this).attr('pool_record_id');
    var service = $(this).attr('data-service');
@@ -269,6 +273,8 @@ $(document).on('click','.view_application',function(){
    $('#btn_val').attr('value', btn_val);
    $('#pool_record_id').attr('value', record_id);
    var userwallet = $("#userwallet").val();
+
+if(cpermission == 1){
 
    Swal.fire({
           title: 'Do you want to process this application or process by company?',
@@ -318,7 +324,36 @@ $(document).on('click','.view_application',function(){
             }
           }
         })
-  
+   }else{
+       Swal.fire({
+          title: 'Do you want to process this application or process by company?',
+          showDenyButton: false,
+          showCancelButton: true,
+          denyButtonColor: '#3085d6',
+          confirmButtonText: 'I will Process',
+          denyButtonText: `Backend will process`,
+        }).then((result) => {
+         
+          if (result.isConfirmed) {
+            var pool_status = 1;
+             $.ajax({
+              url : base_url + 'franchise/enquiry/add_pool_staus_description',
+              type : "POST",
+              data : {btn_val,pool_record_id,pool_status},
+              dataType: 'json',
+              success : function(data){
+                 if(data.status == 'success'){
+                   window.location = continue_to;
+                }else{
+                   Swal.fire("Warning!", data.message, "warning");
+                }
+             }
+          });
+
+          } 
+        })
+
+   }
    
    var pool_status = 1;
    

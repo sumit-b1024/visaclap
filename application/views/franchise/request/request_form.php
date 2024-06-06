@@ -53,12 +53,11 @@ h3 {
           <div class="row cmn-blk">
             <div class="col-md-12">
                         <div class="col-md-4">
-
-                                    <label class="custom-control custom-checkbox-md">
+                            <label class="custom-control custom-checkbox-md">
                                 <input type="checkbox" class="custom-control-input display_exist_filter" name="display_exist_filter" id="display_exist_filter" value="1">
                                 <span class="custom-control-label"></span>
                                 <label for="display_exist_filter">Allready Exist Enquiry</label>
-                              </label>
+                            </label>
                                
                         </div>
                         <div class="col-md-12 display_exist_inquiry" style="display:none;">

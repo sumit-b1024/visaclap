@@ -373,9 +373,22 @@ if(cpermission == 1){
      dataType: 'json',
      success : function(data){
         if(data.status == 'success'){
- 
+          //$('#pool_status_modal').modal('toggle');
           window.location = continue_to;
-      
+          /*Swal.fire("Success!", data.message, "success").then(function(){
+           if(data.pool_status=="1"){
+            var p_status =  "warning";
+         }else if(data.pool_status=="2"){
+            var p_status =  "success";
+         }else{
+            var p_status =  "danger";
+         } 
+         $('#pool_chane_i'+pool_record_id).attr('class','btn btn-'+p_status+' btn-sm');
+         get_process_pool_data();
+         get_all_today_follow_up_data();
+         get_all_yesterday_follow_up_data();
+         get_all_missed_follow_up_data();
+      });*/
        }else{
           Swal.fire("Warning!", data.message, "warning");
        }

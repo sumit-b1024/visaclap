@@ -37,7 +37,7 @@ class Email_Template extends MY_Controller
 
 	function add()
 	{ 
-		$this->content->extra_js  = array('jquery.min','bootstrap-datepicker/bootstrap-datepicker.min','input-mask/jquery.maskedinput','bootstrap-daterangepicker/moment.min','bootstrap-daterangepicker/daterangepicker','custom','input-mask/jquery.mask.min','bootstrap/js/popper.min','select2.full.min', 'select2','summernote/summernote1','summernote');
+		$this->content->extra_js  = array('jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min','summernote/summernote1','summernote');
 		$this->content->extra_css = array('custom');
 		$title = 'Add Email Template';
 		$this->content->breadcrumb = array(
@@ -53,6 +53,7 @@ class Email_Template extends MY_Controller
 		
 		$this->load_view('add_edit_email_template', $title);
 	}
+
 	function store_email_template_data(){
 		if($this->input->post()){
 
@@ -61,6 +62,7 @@ class Email_Template extends MY_Controller
 			}else{
 				$enquiry = "0";
 			}
+			
 			$template_array = array(
 				'name' => $this->input->post('name'),
 				// 'name' => $this->input->post('name'),
@@ -102,11 +104,7 @@ class Email_Template extends MY_Controller
 			redirect('franchise/email_template', 'refresh');
 		}
 		$title = 'Edit Email Template';
-		$this->content->breadcrumb = array(
-			'Dashboard'      => 	'',
-			'View Email Template'  => 'franchise/email_template/',
-			$title         	=> 	NULL
-		);
+		$this->content->breadcrumb = array('Dashboard' => '','View Email Template'  => 'franchise/email_template/',$title => NULL);
 		$this->content->title   = 	$title;
 		$this->content->action  = 	'';
 		$this->content->info   	= 	'';
@@ -119,15 +117,9 @@ class Email_Template extends MY_Controller
 	function delete_email_template_data(){
 		if($this->input->post('id') > 0){
 			$this->setting_model->delete_email_template_data($this->input->post('id'));
-			$response = array(
-				'status' => 'success',
-				'message' => 'Template Removed Successfully.'
-			);
+			$response = array('status' => 'success','message' => 'Template Removed Successfully.');
 		}else{
-			$response = array(
-				'status' => 'failed',
-				'message' => 'Something Went Wrong.'
-			);
+			$response = array('status' => 'failed','message' => 'Something Went Wrong.');
 		}
 		echo json_encode($response);
 		die;

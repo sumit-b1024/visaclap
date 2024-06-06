@@ -14,13 +14,22 @@
              <?php
              $index = 1;
              $balance = 0;
+
              foreach($get_passbook_history as $payment )
              {
                 ?>
                 <tr>
                    <td><?=$payment->amount; ?></td>
                    <td><?=$payment->ptype; ?></td>
-                   <td><?=$payment->servisetype; ?>&nbsp;<?php if($payment->service_type == Service_type::VISA){ echo "(FOR ".$visa[0]." TO ".$visa[1].")"; } ?><?php if($payment->service_type == Service_type::FLIGHT){ echo "(".$flightname->origin." TO ".$flightname->destination.")"; } ?></td>
+                   <td><?=$payment->servisetype;  ?>
+                   <?php if($payment->booking_detail == "") { ?>
+                   &nbsp;<?php if($payment->service_type == Service_type::VISA){ echo "(FOR ".$visa[0]." TO ".$visa[1].")"; } ?><?php if($payment->service_type == Service_type::FLIGHT){ echo "(".$flightname->origin." TO ".$flightname->destination.")"; } ?>
+                <?php } ?>
+                   <?php if($payment->booking_detail) { ?>
+                   <?php echo " (".$payment->booking_detail.")"; ?>  
+                   <?php } ?>   
+
+                   </td>
                    <td><?=$payment->contact; ?></td>
                    <td><?= date("d-m-Y H:i:s",strtotime($payment->created_at)); ?></td>
                   <td><?=$payment->balance; ?></td>

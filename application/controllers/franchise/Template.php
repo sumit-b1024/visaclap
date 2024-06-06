@@ -29,6 +29,7 @@ class Template extends MY_Controller
 		$this->content->action  = 	'';
 		$this->content->info   	= 	'';
 		$this->content->get_all_templates   = 	$this->setting_model->get_all_templates();
+		
 		$this->load_view('view_template', $title);
 	}
 
@@ -59,11 +60,13 @@ class Template extends MY_Controller
 			}else{
 				$enquiry = "0";
 			}
+
 			if($this->input->post('expiry_date') != ""){
 				$expiry_date = date('Y-m-d',strtotime($this->input->post('expiry_date')));
 			}else{
 				$expiry_date = NULL;
 			}
+			
 			$data_array = array(
 				'name' => $this->input->post('name'),
 				'description' => trim($this->input->post('description')),
@@ -87,6 +90,7 @@ class Template extends MY_Controller
 					'message' => 'Template Data Stored Successfully.'
 				);
 			}
+			
 		}else{
 			$response = array(
 				'status' => 'failed',
@@ -113,6 +117,7 @@ class Template extends MY_Controller
 		echo json_encode($response);
 		die;
 	}
+
 	function edit_template(){	
 		$this->content->extra_js  = array('jquery.dataTables.min', 'dataTables.bootstrap5.min', 'dataTables.responsive.min', 'responsive.bootstrap5.min', 'table-data','date-picker/date-picker','date-picker/jquery-ui','input-mask/jquery.maskedinput','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert','time-picker/jquery.timepicker','time-picker/toggles.min','summernote/summernote1','summernote');
 		$this->content->extra_css = array('custom');
@@ -135,6 +140,7 @@ class Template extends MY_Controller
 		$this->content->get_template_data = $this->setting_model->fetch_template_data_byid($id);
 		$this->load_view('add_edit_template', $title);
 	}
+	
 	public function display_name_dynamic(){
 		/** page level css & js * */
 		$this->content->extra_js  = array('responsive.bootstrap5.min', 'table-data','select2.full.min', 'select2','sweet-alert/sweetalert.min','sweet-alert');

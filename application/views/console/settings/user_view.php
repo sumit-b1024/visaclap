@@ -82,7 +82,16 @@
            echo toPropercase($list->first_name .' '. $list->last_name);
           } ?>
           </td>
-          <td><?= $list->firm_name; ?></td>
+          <td>
+            
+            <?php if($list->role == User_role::FRANCHISE_STAFF){
+                $get_franchise_name = $this->setting_model->get_franchise_name_by_franch_staff($list->created_by);
+                echo $get_franchise_name->firm_name."<br/>".$get_franchise_name->email;
+            }else{
+                echo $list->firm_name;
+            }
+            ?>
+          </td>
           <td><?= $list->mobile; ?></td>
           <td><?= $list->email; ?></td>
           <td><?= User_role::getValue($list->role); ?></td>

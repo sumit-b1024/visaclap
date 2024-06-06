@@ -88,6 +88,7 @@ class Franchise_payment extends CI_Controller {
 					'razorpay_payment_id' => $_POST['razorpay_payment_id'],
 					'razorpay_signature' => $_POST['razorpay_signature']
 				);
+				
 				$api->utility->verifyPaymentSignature($attributes);
 
 				$datarecord = $api->payment->fetch($_POST['razorpay_payment_id']);

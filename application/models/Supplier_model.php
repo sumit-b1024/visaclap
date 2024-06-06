@@ -242,7 +242,7 @@ class Supplier_model extends MY_Model {
 		//echo '<pre>';
 		//print_r($this->session); exit;
 
-		$this->db->select('cv.field_name,cv.field_value,cv.origin_country,cv.group_id,cv.destination_country,cv.created_at');
+		$this->db->select('cv.field_name,cv.field_value,cv.origin_country,cv.group_id,cv.destination_country,cv.created_at,cv.passing');
 		$this->db->from('cs_visa_application as cv');
 		if($origin_country_id != ""){
 			$this->db->where('cv.origin_country',$origin_country_id);
@@ -282,6 +282,7 @@ class Supplier_model extends MY_Model {
 
     return $this->db->get()->result();
 }
+
 public function fetch_sub_application_data($gid="")
 {
 
@@ -290,7 +291,6 @@ public function fetch_sub_application_data($gid="")
 	$this->db->where('cv.group_id',$gid);
 
 	return $this->db->get()->result();
-
 }
 
 public function fetch_merge_column($gid="")
@@ -330,6 +330,7 @@ public function getch_all_state_by_id($cid)
 	}
 	return array();
 }
+
 public function getch_all_cities_by_id($stateid)
 {
 	$this->db->select('*');

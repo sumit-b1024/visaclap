@@ -59,6 +59,7 @@
 
 								</select>
 							</div>
+							<input type="hidden" name="enquiry_name" value="<?= isset($enquiry->enquiry_name) && !empty($enquiry->enquiry_name) ? $enquiry->enquiry_name : set_value('enquiry_name'); ?>" class="enquiryname" />
 						</div>
 						
 
@@ -91,7 +92,7 @@
 
 							
 
-						<div class="col-sm-6 col-md-6">
+						<div class="col-sm-6 col-md-6 intrestedcountry">
 							<div class="form-group input-inside">
 								<label class="form-label">Select Intersted Country</label>
 								<select class="form-control i_country multiple_country" id="i_country" name="" value="<?= $enquiry->intersted_country ?>" data-placeholder="Select Intersted Country">
@@ -100,7 +101,9 @@
 										<option value="<?= $value->id ?>" <?= (!empty($enquiry) && in_array($value->id,explode(",",$enquiry->intersted_country))) ? "selected" : "" ?> ><?= $value->name.'  ('.$value->sortname.')'; ?></option>
 									<?php } ?> -->
 								</select>
+								<input type="hidden" name="intersted_country_name" class="intersted_country_name" value="<?= isset($enquiry->intersted_country_name) && !empty($enquiry->intersted_country_name) ? $enquiry->intersted_country_name : set_value('intersted_country_name'); ?>">
 							</div>
+
 						</div>
 						<div class="col-sm-6 col-md-6 selectvisa" style="display:none;">
 							<div class="form-group input-inside">
@@ -109,6 +112,7 @@
 									
 								</select>
 							</div>
+							<input type="hidden" name="visatype_name" class="visatype_name" value="<?= isset($enquiry->visa_name) && !empty($enquiry->visa_name) ? $enquiry->visa_name : set_value('visa_name'); ?>">
 						</div> 
 						<!-- <div class="col-sm-6 col-md-6">
 							<div class="form-group">
@@ -262,6 +266,7 @@ $('.repeater').repeater({
 var countryid = "<?php echo $enquiry->intersted_country; ?>";
 	var visaid = "<?php echo $enquiry->visa_id; ?>";
 	
+	
 	 function get_all_country(){
     $.ajax({
        //url : api_url+"api/visacountry",
@@ -271,11 +276,14 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
         mode: 'cors',
        success:function(data){
         var countryidarray = countryid.split(',');
+        var countrylen = countryidarray.length;
         if(data.code != 500){
           $.each(data.message, function (key, val) {
             let selected="";
               if(jQuery.inArray(val.id, countryidarray) != -1) {
                     selected = 'selected';
+                }else{
+                		selected = '';
                 }
              $("#i_country").append('<option value="'+val.id+'" '+selected+'>'+val.name+'</option>');
              $('.enquiry_form .i_country ').select2({
@@ -283,6 +291,14 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
                  width: "100%"
               });
          });
+          if(countrylen > 1){
+          	//$('.i_country').trigger('change');
+          	$('.i_country').select2({multiple: true});
+          	$('.i_country').val(countryidarray);
+          	$('.i_country').attr('name', 'i_country[]');
+          	$('.i_country').trigger('change');
+          	$('.selectvisa').hide();
+          }
         }else{
          alert("Please Enter Domain key");
       }
@@ -294,6 +310,7 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 	$('.i_country').on('change',function(){
 		console.log('111');
 		var destination = $(this).val();  
+
 		// if(destination){
 			$.ajax({
 				type:"POST",
@@ -307,11 +324,11 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
-							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+								let selected="";
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'" '+selected+'>'+data.message[key].type_of_visa+'</option>');
 
 						});
 					}else{
@@ -328,6 +345,7 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 	});
 	function geteditvisa(country){ 
 		var destination = country;
+		
 		$.ajax({
 				type:"POST",
 				url: base_url + "franchise/reports/get_all_visa_by_country_id",
@@ -340,12 +358,11 @@ var countryid = "<?php echo $enquiry->intersted_country; ?>";
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
-							let selected="";
-				              if(jQuery.inArray(value.id, visaidarray) != -1) {
+								let selected="";
+				              if(jQuery.inArray(data.message[key].visa_type_id, visaidarray) != -1) {
 				                    selected = 'selected';
 				                }
-							$("#visatype").append('<option value="'+value.id+'" '+selected+'>'+value.name+'</option>');
-							
+							$("#visatype").append('<option value="'+data.message[key].visa_type_id+'" '+selected+'>'+data.message[key].type_of_visa+'</option>');
 
 						});
 					}else{
@@ -484,7 +501,11 @@ $(document).on('change','.enquiry_type',function(e){
 
 		var enquiry_type = $(".enquiry_type option:selected").val();
 
-		
+		if(enquiry_type == '35'){
+	  		$('.intrestedcountry').hide();
+	  	}else{
+	  		$('.intrestedcountry').show();
+	  	}
 	  	if(enquiry_type == '32'){
 	  		//$('.i_country').prop('multiple', false);
 	  		$('.multiple_country ').select2({
@@ -509,7 +530,14 @@ $(document).on('change','.enquiry_type',function(e){
         selectc.data('select2').$container.addClass('select2-container--open');
     })
 
-		var enquirytype = '<?= isset($enquiry) && !empty($enquiry->enquiry_type) ? '32' : set_value('enquiry_type'); ?>';
+		var enquirytype = '<?= isset($enquiry) && !empty($enquiry->enquiry_type) ? $enquiry->enquiry_type : $enquiry->enquiry_type; ?>';
+
+			if(enquirytype == '35'){
+	  		$('.intrestedcountry').hide();
+	  	}else{
+	  		$('.intrestedcountry').show();
+	  	}
+
 		if(enquirytype == '32'){
 			$('.multiple_country ').select2({
 			    multiple: false,

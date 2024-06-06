@@ -56,6 +56,7 @@
 									<?php } ?>
 
 								</select>
+								<input type="hidden" name="enquiry_name" value="<?= isset($enquiry->enquiry_name) && !empty($enquiry->enquiry_name) ? $enquiry->enquiry_name : set_value('enquiry_name'); ?>" class="enquiryname" />
 							</div>
 						</div>
 						
@@ -86,25 +87,27 @@
 							</div>
 						</div>
 
-						<div class="col-sm-6 col-md-6">
+						<div class="col-sm-6 col-md-6 in_country">
 							<div class="form-group">
 								<label class="form-label">Select Intersted Country</label>
-								<select class="form-control i_country multiple_country " id="i_country" name="i_country[]" multiple value="<?= $enquiry->intersted_country ?>" data-placeholder="Select Intersted Country">
-									<option value=""></option>
+								<select class="form-control i_country multiple_country " id="i_country" name="i_country[]" multiple value="<?= $enquiry->intersted_country ?>" data-placeholder="Select Intersted Country" style="width:100%;">
+									
 									<!-- <?php foreach ($get_all_country as $key => $value) { ?>
 										<option value="<?= $value->id ?>" <?= (!empty($enquiry) && in_array($value->id,explode(",",$enquiry->intersted_country))) ? "selected" : "" ?> ><?= $value->name.'  ('.$value->sortname.')'; ?></option>
 									<?php } ?> -->
 								</select>
+								<input type="hidden" name="intersted_country_name" class="intersted_country_name" value="<?= isset($enquiry->intersted_country_name) && !empty($enquiry->intersted_country_name) ? $enquiry->intersted_country_name : set_value('intersted_country_name'); ?>">
 							</div>
 						</div>
 
-						<div class="col-sm-6 col-md-6">
+						<div class="col-sm-6 col-md-6 select_visa">
 							<div class="form-group">
 								<label class="form-label">Select Visa</label>
-								<select class="form-control city select2-show-search form-select" id="visatype" multiple name="visatype[]" data-placeholder="Select Visa">
+								<select class="form-control city select2-show-search form-select" id="visatype" name="visatype" data-placeholder="Select Visa">
 									
 								</select>
 							</div>
+							<input type="hidden" name="visatype_name" class="visatype_name" value="<?= isset($enquiry->visa_name) && !empty($enquiry->visa_name) ? $enquiry->visa_name : set_value('visa_name'); ?>">
 						</div> 
 						
 
@@ -213,18 +216,18 @@ function get_all_country(){
 
 
 
-				$('.multiple_country').select2({
+				var cuscon = $('.multiple_country').select2({
                     minimumResultsForSearch: Infinity,
                     width: '100%'
                 });
 
-                $('.multiple_country').on('click', () => {
+              /*  $('.multiple_country').on('click', () => {
                     let selectField = document.querySelectorAll('.multiple_country .select2-search__field')
                     selectField.forEach((element, index) => {
                         element.focus();
                     })
-                });
-
+                });*/
+					
 
                 $('.city').select2({
                     minimumResultsForSearch: Infinity,
@@ -239,16 +242,65 @@ function get_all_country(){
                 });
 
                 $('#language').select2();
-
+                $('.in_country').hide();
+                $('.select_visa').hide();
+				
 				$('.enquiry_type').select2();
                 $('.s_description').select2();
 				$('.enquiry_staff_id').select2();
 
-/* get visa type name */
-	$('.i_country').on('change',function(){
-		console.log('111');
+				$('body').on('change', '.enquiry_type', function() {
+		var enquiry_type = $("#enquiry_type option:selected").val();
+		var enquiry_type_name = $("#enquiry_type option:selected").text();
+		
+		
+	  	if(enquiry_type == '32'){
+	  		//$('.i_country').prop('multiple', false);
+	  		/*$('.multiple_country').select2({
+			    multiple: false,
+			  });*/
+	  		cuscon.val(null).trigger('change');
+	  		cuscon.attr('multiple', false);
+	  		$('.multiple_country').attr('name', 'i_country');
+	  		$('.selectvisa').show();
+	  		$('.i_country').trigger('refresh');
+	  		
+	  	}else{
+	  		//$('.i_country').prop('multiple', true);
+	  		//$('.i_country').attr('multiple', 'multiple');
+	  		/*$('.multiple_country ').select2({
+			    multiple: true,
+			  });*/
+	  		cuscon.val(null).trigger('change');
+	  		cuscon.attr('multiple', true);
+	  		$('.multiple_country').attr('name', 'i_country[]');
+	  		$('.selectvisa').hide();
+	  		
+	  		//intersted_country_name
+	  	}
+	  	$('.in_country').show();
+        $('.select_visa').show();
+	  	$('.enquiryname').val(enquiry_type_name);
+
+//visachange
+	  });
+			$('body').on('change', '.i_country', function() {
+  	//var int_country_name = $("#i_country option:selected").text();
+  	var items = $("#i_country option:selected").map((i, el) => el.textContent.trim()).get();
+  	$('.intersted_country_name').val(items.join());
+
+  });
+	  $('body').on('change', '#visatype', function() {
+	  	//var int_country_name = $("#i_country option:selected").text();
+	  	
+	  	var visatype_name = $("#visatype option:selected").text();
+	  	$('.visatype_name').val(visatype_name);
+
+	  });
+
+			$(document).on('change', '.multiple_country', function(evt) {		
 		var destination = $(this).val();  
-		// if(destination){
+		
 			$.ajax({
 				type:"POST",
 				url: base_url + "franchise/reports/get_all_visa_by_country_id",
@@ -260,7 +312,6 @@ function get_all_country(){
 						$("#visatype").empty();
 						$("#visatype").append('<option value="">Select Visa</option>');
 						$.each(data.message,function(key,value){
-							
 							$("#visatype").append('<option value="'+value.id+'">'+value.name+'</option>');
 						});
 					}else{

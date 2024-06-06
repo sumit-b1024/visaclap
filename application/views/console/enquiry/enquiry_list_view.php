@@ -281,7 +281,7 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
         </button>
         <div class="dropdown-menu border-0 filter-dropdown">
             <form class="pool_page_report">
-            <div class="input-inside">
+            <div class="input-inside1">
               <label for="" class="d-block">Select Enquiry Type</label>
               <select name="enquiry_type" class="form-select enquiry_type">
                 <option value="">Select Enquiry</option>
@@ -290,7 +290,7 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
                  <?php } ?>
               </select>
             </div>
-            <div class="input-inside">
+            <div class="input-inside1">
               <label for="" class="d-block">Select Staff</label>
               <select name="" class="form-select">
                 <option value="">Choose Staff</option>
@@ -481,6 +481,9 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
       }else if(shod == 'missed-follow'){
          $('#missed-follow').html();
          get_all_missed_follow_up_data();
+      }else if(shod == 'proce-pool'){
+         $('#proce-pool').html();
+         get_process_pool_data();
       }
 
    });
@@ -559,7 +562,7 @@ $(document).on('click','.view_application',function(){
 
    var enquiry_type = $('.enquiry_type').val();
    var staff_id = $('.staff_id').val();
-   
+   $('.open_my_form_form').addClass('disabled');
 
    $.ajax({
       url : base_url + 'franchise/enquiry/fetch_process_pool_data',
@@ -573,6 +576,7 @@ $(document).on('click','.view_application',function(){
        $('#process_pool_div').html("");
        $('#process_pool_div').html(data);
        $('#responsive_process_pool').DataTable();
+       $('.open_my_form_form').removeClass('disabled');
     }
  });
 }
@@ -605,7 +609,8 @@ function get_all_notification(){
 function get_all_today_follow_up_data(){
    var enquiry_type = $('.enquiry_type').val();
    var staff_id = $('.staff_id').val();
-
+   $('.open_my_form_form').addClass('disabled');
+//alert(enquiry_type);
    $.ajax({
       url : base_url + 'franchise/enquiry/get_all_today_follow_up_data',
       type : "POST",
@@ -618,6 +623,7 @@ function get_all_today_follow_up_data(){
      $('#today_follow_up_div').html("");
      $('#today_follow_up_div').html(data);
      $('#responsive_datatable_today').DataTable(); 
+     $('.open_my_form_form').removeClass('disabled');
 
   }
 });
@@ -626,6 +632,7 @@ function get_all_today_follow_up_data(){
 function get_all_yesterday_follow_up_data(){
    var enquiry_type = $('.enquiry_type').val();
    var staff_id = $('.staff_id').val();
+   $('.open_my_form_form').addClass('disabled');
 
    $.ajax({
       url : base_url + 'franchise/enquiry/get_all_yesterday_follow_up_data',
@@ -639,6 +646,7 @@ function get_all_yesterday_follow_up_data(){
        $('#yesterday_follow_up_div').html("");
        $('#yesterday_follow_up_div').html(data);
        $('#responsive_datatable_yesterday').DataTable();
+       $('.open_my_form_form').removeClass('disabled');
     }
  });
 }
@@ -646,6 +654,7 @@ function get_all_yesterday_follow_up_data(){
 function get_all_missed_follow_up_data(){
    var enquiry_type = $('.enquiry_type').val();
    var staff_id = $('.staff_id').val();
+   
 
    $.ajax({
       url : base_url + 'franchise/enquiry/get_all_missed_follow_up_data',
@@ -653,12 +662,15 @@ function get_all_missed_follow_up_data(){
       data : {enquiry_type,staff_id},  
       beforeSend: function(){
        $(".m_loader").show();
+       $('.open_my_form_form').addClass('disabled');
     },
     success : function(data){
+
        $(".m_loader").hide();
        $('#missed_follow_up_div').html("");
        $('#missed_follow_up_div').html(data);
        $('#responsive_datatable_missed').DataTable();
+      $('.open_my_form_form').removeClass('disabled');
     }
  });
 }
@@ -1371,7 +1383,10 @@ $(document).on('click', '.change_process_pool_status', function () {
 });
 
 $(document).on('click', '.new_change_process_pool_status', function (e) {
+
    $('.pool_description').val('');
+   var cpermission = '<?php echo $company_permission->company_permission ?>';
+
    var btn_val = $(this).val();
    var pool_record_id = $(this).attr('pool_record_id');
    var service = $(this).attr('data-service');
@@ -1385,6 +1400,8 @@ $(document).on('click', '.new_change_process_pool_status', function (e) {
    $('#btn_val').attr('value', btn_val);
    $('#pool_record_id').attr('value', record_id);
    var userwallet = $("#userwallet").val();
+if(cpermission == 1){
+
 
    Swal.fire({
           title: 'Do you want to process this application or process by company?',
@@ -1434,6 +1451,34 @@ $(document).on('click', '.new_change_process_pool_status', function (e) {
             }
           }
         })
+     }else{
+      Swal.fire({
+          title: 'Do you want to process this application or process by company?',
+          showDenyButton: false,
+          showCancelButton: true,
+          confirmButtonText: 'I will Process',
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            var pool_status = 1;
+             $.ajax({
+              url : base_url + 'franchise/enquiry/add_pool_staus_description',
+              type : "POST",
+              data : {btn_val,pool_record_id,pool_status},
+              dataType: 'json',
+              success : function(data){
+                 if(data.status == 'success'){
+                   window.location = continue_to;
+                }else{
+                   Swal.fire("Warning!", data.message, "warning");
+                }
+             }
+          });
+
+          } 
+        })
+
+     }
   
    
    var pool_status = 1;

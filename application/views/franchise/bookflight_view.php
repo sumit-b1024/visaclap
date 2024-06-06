@@ -540,7 +540,7 @@ function get_airpost_list(){
         $('.fromto').hide();
 
         $('.tosele').datepicker({
-            showOtherMonths: true,
+            //showOtherMonths: true,
             selectOtherMonths: true,
             dateFormat: 'yy-mm-d',
             minDate: 0

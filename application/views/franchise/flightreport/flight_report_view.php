@@ -151,7 +151,7 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
            <div class="row">
            <?php  if($this->session->userdata('user_role') == User_role::FRANCHISE){ ?>
                <div class="col-sm-12 col-md-2 ">
-                  <div class="form-group input-inside">
+                  <div class="form-group input-inside1">
                      <label class="form-label ">Staff</label>
                      <select class="staff_id form-select"  id="staff_id" name="staff_id" value="" data-placeholder="Select Staff">
                         <option value="">Select Staff</option>

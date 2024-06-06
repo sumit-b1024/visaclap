@@ -11,7 +11,7 @@
 				<form class="form-horizontal" id="pool_status_form" method="post">
 					<div class="row">
 						<div class="col-sm-12 col-md-12 mb-1">
-							<div class="form-group input-inside">
+							<div class="form-group input-inside1">
 								<label class="form-label"> Select Pool Type <span class="text-red">*</span></label>
 								<select class="pool_type form-select" id="pool_type" name="pool_type">
 									<option value="">Select Pool Status</option>

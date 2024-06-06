@@ -31,9 +31,7 @@
                             $p_status =  "danger";
                          }
                          ?>
-                         <button type="button" id="pool_chane_i<?= $view->id ?>" class="btn btn-<?= $p_status ?> dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false">
-                           <i class="fe fe-stroopwafel me-2 "></i>Change Pool Status
-                        </button>
+                         <button type="button" id="pool_chane_i<?= $view->id ?>" class="btn btn-<?= $p_status ?> dropdown-toggle " data-bs-toggle="dropdown" aria-expanded="false"><i class="fe fe-stroopwafel me-2 "></i>Change Pool Status</button>
                         <div class="dropdown-menu" >
                          <button type="button" class="btn btn-warning btn-sm change_pool_status"  pool_record_id="<?= $view->id; ?>"  value="1">Process Pool</button>
                          <button type="button" class="btn btn-danger btn-sm change_pool_status" pool_record_id="<?= $view->id; ?>"  value="3">Drop Pool</button>

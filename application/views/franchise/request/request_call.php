@@ -402,14 +402,14 @@ $wallet =  $this->setting_model->get_wallet($walletuser);
                 $.each(data.message, function (key, val) {
                       let selected="";
                       if(val.id == country){
-                        selected = 'selected';
-                  }
+                            selected = 'selected';
+                        }
                   $("#f_country").append('<option value="'+val.id+'" '+selected+'>'+val.name+'</option>');
                   $("#t_country").append('<option value="'+val.id+'">'+val.name+'</option>');
 
             });
           }else{
-           alert("Please Enter Domain key");
+           alert("Please Enter Domain key.");
           }
 }
 });
@@ -418,7 +418,6 @@ $wallet =  $this->setting_model->get_wallet($walletuser);
 
 
 $(document).ready(function(){
-
     $(document).on('click', '.bookmark_checkbox', function () {
          var id = $(this).data('id');
          var from_country = $('#f_country').val();
@@ -478,10 +477,10 @@ $(document).ready(function(){
                  url: base_url + 'franchise/request/deletebookmark',
                  data:{id},
                  dataType : 'json',
-                 success: function(result) {
-                  location.reload();
-            }
-      });
+                     success: function(result) {
+                      location.reload();
+                    }
+             });
           }
 
     });
@@ -510,18 +509,20 @@ $(document).on('click','.create_mail_btn',function(){
   $('.emailvisaid').val(datavis);
 });
 $(document).on('click','.create_watsapp_btn',function(){
+
     $('#create_watsapp_application').modal('show');
+
      $('#create_watsapp_application #wats_enquiry_id ').select2({
          dropdownParent: $('#create_watsapp_application'),
          width: "100%"
       });
 
      var watsselectc = $('#wats_enquiry_id');
-  watsselectc.on('select2:open', () => {
-    document.querySelector('.select2-search__field').focus();
+    watsselectc.on('select2:open', () => {
+         document.querySelector('.select2-search__field').focus();
     })
-  var datavis = $(this).attr('data-visa');
-  $('.visaid').val(datavis);
+      var datavis = $(this).attr('data-visa');
+      $('.visaid').val(datavis);
   
 });
 
@@ -618,11 +619,8 @@ $(document).on('submit','.store_watsapp_application_form',function(e){
                }).then(function (result) {
                      if (result.value)
                      {
-                      window.location.href = continue_to+'?phone='+res.data.mobile_no;
-
-
-                }
-
+                         window.location.href = continue_to+'?phone='+res.data.mobile_no;
+                     }
           });
          }
          $('#enquiry_id').val(null).trigger("change");
@@ -645,12 +643,11 @@ $(document).on('submit','.store_visa_application_form',function(e){
     if(selected > 0) { 
      $('.failed_warn').text('');
      $('.failed_warn').attr('style','display:none');
-
- } else { 
-     $('.failed_warn').text('Select Atleast One Visa');
-     $('.failed_warn').removeAttr('style','display:none');
-     return false;
- }
+     } else { 
+         $('.failed_warn').text('Select Atleast One Visa');
+         $('.failed_warn').removeAttr('style','display:none');
+         return false;
+     }
 
     /*var isChecked = $('#visa_type input[name="visa_checkbox"]:checked').length;
 
@@ -716,9 +713,8 @@ $(document).on('submit','.store_visa_application_form',function(e){
          }).then(function (result) {
                if (result.value)
                {
-                window.location.href = continue_to+'?email='+res.data.email;
-
-          }
+                     window.location.href = continue_to+'?email='+res.data.email;
+               }
 
     });
    }

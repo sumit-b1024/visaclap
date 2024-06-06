@@ -55,22 +55,24 @@
                echo '('.$view->enquiry_type_name.")"; 
              }
             if($view->intersted_country != ""){
-                $country = explode(",",$view->intersted_country);
+               /* $country = explode(",",$view->intersted_country);
                 $allcountryname = array();
                  for($i=0;$i<count($country);$i++){ //echo $country[$i]; exit;
                     $from = $this->setting_model->get_api_country_by_id($country[$i]);
                     $allcountryname[] = $from->countrydata[0]->name;
                   } 
-               echo ' ('.implode(",", $allcountryname).')';
+               echo ' ('.implode(",", $allcountryname).')';*/
+               echo '('.$view->intersted_country_name.")"; 
             }
              if($view->visa_id != ""){
-             $visaid = explode(",",$view->visa_id);
+             /*$visaid = explode(",",$view->visa_id);
              $allvisaname = array();
               for($j=0;$j<count($visaid);$j++){ 
                    $visaidval = $this->setting_model->get_api_visaname_by_id($visaid[$j]);
                   $allvisaname[] =  $visaidval->visaname->name;
                } 
-              echo ' ('.implode(",", $allvisaname).')';
+              echo ' ('.implode(",", $allvisaname).')';*/
+               echo '('.$view->visa_name.")"; 
             }
             if($view->visa_id != ""){ 
       //$visafee = $this->setting_model->get_api_servicecharge($view->visaserviceid);  
@@ -83,7 +85,7 @@
          ?></p>
    <div class="type-actions">
            <?php if($view->enquiry_type_id == "32"){ ?>
-      <button type="button" class="new_change_process_pool_status" data-service="<?= $service; ?>"   pool_record_id="<?= $view->id; ?>"  value="1" >Process Pool</button>
+      <button type="button" class="new_change_process_pool_status"  data-service="<?= $service; ?>"   pool_record_id="<?= $view->id; ?>"  value="1" >Process Pool</button>
       <?php } else { ?>
       <button type="button" class="change_process_pool_status"   pool_record_id="<?= $view->id; ?>"  value="1" >Process Pool</button>
       <?php } ?>
