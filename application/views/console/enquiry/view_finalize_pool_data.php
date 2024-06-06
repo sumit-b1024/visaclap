@@ -4,6 +4,7 @@
    }
 </style>
 <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
+<div id='firstApp'>
 <h6 class="primary-title1 mb-0" style="    color: #575757;">Select Filter </h6><br>
 <div class="row row-sm">
    <div class="col-lg-12">
@@ -183,8 +184,74 @@
 </div>
 <div class="card-body">
   <div class="table-responsive" id="view_enquiry_tbl">
+   hello {{dataFromServer.length}}
   <table class="table table-bordered text-nowrap border-bottom" id="finalize_enquiry_report_pool">
-
+  <thead>
+     <tr>
+        <th width="wd-15p border-bottom-0" style="width:10%">
+           <label class="custom-control custom-checkbox-md">
+            <input type="checkbox" class="custom-control-input" id="pool_finalize_th" name="example-checkbox1" value="option1" >
+            <span class="custom-control-label"></span>
+         </label>
+      </th>
+      <th class="wd-15p border-bottom-0" style="width:45%">Name</th>
+      
+      <th class="wd-15p border-bottom-0" style="width:10%">Mobile No</th>
+      
+      <th width="wd-15p border-bottom-0" style="width:10%"> Created </th> 
+      <th class="wd-15p border-bottom-0" style="width:15%">Follow Up Date</th>
+      <!-- <th class="wd-15p border-bottom-0" >Passport No</th>
+      <th class="wd-15p border-bottom-0" >Valid From</th>
+      <th class="wd-15p border-bottom-0" >Valid To</th> -->
+      
+      <!-- <th class="wd-15p border-bottom-0" >Pool Status</th> -->
+      <th class="wd-15p border-bottom-0" style="width:10%">Action</th>
+   </tr>
+</thead>
+<tbody>
+        <tr v-for="template in dataFromServer" :key="template.id">
+          <td>
+            <label class="custom-control custom-checkbox-md">
+              <input type="checkbox" class="custom-control-input pool_finalize_td" :value="template.id">
+              <span class="custom-control-label"></span>
+            </label>
+          </td>
+          <td>
+            <div class="cell_content">
+              <p>
+                {{ template.name }}
+                <span v-if="sessionUserRole === 'FRANCHISE' && template.staff_name" class="d-inine orange-text">({{ template.staff_name }})</span>
+                <span class="d-inine orange-text">({{  Math.round((  new Date()-new Date(template.created_at)) / (1000 * 60 * 60 * 24)) }} Days)</span>
+              </p>
+              <p class="fonts11">
+                <span v-if="template.enquiry_type_name">({{ template.enquiry_type_name }})</span>
+                <span v-if="template.intersted_country_name">
+                  ({{  template.intersted_country_name }})
+                </span>
+                <span v-if="template.visa_id">
+                  ({{  template.visa_name }})
+                </span>
+              </p>
+              <div class="type-actions">
+                <button v-if="template.enquiry_type_id == '32'" class="new_change_process_pool_status" :data-service="template.service" :pool_record_id="template.id" value="1">Process Pool</button>
+                <button v-else class="change_process_pool_status" :pool_record_id="template.id" value="1">Process Pool</button>
+              </div>
+            </div>
+          </td>
+          <td>{{ template.mobile_no }}</td>
+          <td>{{ new Date(template.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) }}</td>
+          <td>{{ new Date(template.follow_up_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) }}</td>
+          <td>
+            <div class="tbl-action-wrap">
+              <button class="single-action whatsapp open_whatsup_modal" :value="template.id"><img src="<?php echo base_url('assets/img/whatsapp.svg');  ?>"></button>
+              <button class="single-action view mr-2" title="View" id="view_pool_des" :value="template.id"><img src="<?php echo base_url('assets/img/eye.svg');  ?>"></button>
+              <a v-if="sessionUserRole === 'FRANCHISE' || sessionUserRole === 'FRANCHISE_STAFF' && template.passing == 'yes' && template.mobile_no" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="template.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <a v-if="sessionUserRole === 'FRANCHISE' || sessionUserRole === 'FRANCHISE_STAFF' && template.emailpassing == 'yes' && template.email" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="template.email" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <button v-if="template.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="template.id" data-toggle="tooltip" data-placement="top" title="View Document"><i class="fa fa-file"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
 
   </table>
   </div>
@@ -325,6 +392,7 @@
 </div>
 </div>
 <!-- modal end -->
+</div>
 </div>
 </div>
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
@@ -740,7 +808,7 @@ function get_detail_data(){
      //showOtherMonths: true,
      selectOtherMonths: true,
   });
-  get_enquiry_report_data();
+  //get_enquiry_report_data();
   // $(document).on('click', '.change_pool_status', function () {
   //    $('#pool_status_modal').modal('show');
   //    var btn_val = $(this).val();
@@ -857,13 +925,16 @@ const app = createApp({
                 const self = this;  // Preserve the Vue instance context
 
                 $.ajax({
-      url : base_url+'franchise/reports/generate_finalize_detail_report',
+      url : base_url+'franchise/reports/generate_finalize_enquiry_report',
       type : "POST",
       data : $('.detail_search').serializeArray(),
       success :function(data){
+        
          self.dataFromServer = data.fetch_enquiry_array;
-                        self.currentPage = data.current_page;
-                        self.totalPages = data.total_pages;
+         self.currentPage = data.current_page;
+         self.totalPages = data.total_pages;
+         
+         
        //$('#finalize_enquiry_report_pool').DataTable();
        $('#finalize_enquiry_report_pool').DataTable({
         order: [[4, 'desc']],
@@ -883,9 +954,6 @@ const app = createApp({
    },
     
     mounted() {
-    
- 
-   
       const self = this; 
       this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
 

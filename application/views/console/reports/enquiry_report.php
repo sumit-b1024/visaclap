@@ -1343,7 +1343,9 @@ const app = createApp({
         };
     },
     watch: {
+  
       dataFromServer(newValue, oldValue) {
+        
          if(this.dataTable)
             {
                   console.log( this.dataTable);

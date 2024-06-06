@@ -102,7 +102,7 @@ class Reports extends MY_Controller
 			$staff_id = $post['enquiry_staff_id'];
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::FINALIZE,array(),$enquiry_type,$reason_type);
 			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
-		//	$this->load->view('console/reports/view_finalize_enquiry_report_page',$data);
+			//$this->load->view('console/reports/view_finalize_enquiry_report_page',$data);
 		}
 	}
 

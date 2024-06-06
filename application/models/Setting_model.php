@@ -175,7 +175,6 @@ class Setting_model extends MY_Model
         }
       
 
-
         $this->db->select('tn.id,tn.description,tn.created_at');
         $this->db->from(TBL_NOTIFICATION. ' tn');
         // if(!empty($result)){
@@ -435,6 +434,15 @@ class Setting_model extends MY_Model
         $this->db->select('payment_date,is_paid');
         $this->db->from(TBL_USER_PAYMENT_DATE);
         $this->db->where(array('user_id' => $userid));
+        
+        return $this->db->get()->row();
+    }
+
+    public function get_enquiry_name($passing)
+    {
+        $this->db->select('name');
+        $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE);
+        $this->db->where(array('mobile_no' => $passing));
         
         return $this->db->get()->row();
     }
@@ -788,6 +796,7 @@ class Setting_model extends MY_Model
 
         return $this->db->get()->result();
     }
+
     public function get_current_application_data($app_id)
     {
         $this->db->select('*');
@@ -795,6 +804,7 @@ class Setting_model extends MY_Model
         $this->db->where('group_id', $app_id);
         return $this->db->get()->result();
     }
+    
     public function get_notifications($note_id)
     {
         $this->db->select('id, description');
@@ -930,16 +940,12 @@ class Setting_model extends MY_Model
             if($this->db->insert(TBL_PAYMENT, $data)) {
                 return $this->db->insert_id();
             }
-
     }
     function passbookstore($data){
-            if($this->db->insert(TBL_USER_PASSBOOK, $data)) {
-                return $this->db->insert_id();
-            }
-
+        if($this->db->insert(TBL_USER_PASSBOOK, $data)) {
+            return $this->db->insert_id();
+        }
     }
-
-     
 
     function get_enquiry_list_data($status){
         $this->db->select('*');
@@ -958,6 +964,7 @@ class Setting_model extends MY_Model
         $this->db->order_by('follow_up_date','desc');
         return $this->db->get()->result();
     }
+
     function fetch_enquiries_by_id($id){
        $this->db->select('enquiry_date');
        $this->db->from(TBL_ADD_ENQUIRY_STATUS);
@@ -981,24 +988,24 @@ class Setting_model extends MY_Model
        return $this->db->get()->row();
    }
 
-
    function get_enquiry_old_data($meta){
     $this->db->select('*');
     $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE);
     $this->db->where('id',$meta);
     return $this->db->get()->row();
 }
+
 function get_enquiry_old_document_data($meta){
     $this->db->select('*');
     $this->db->from(TBL_ENQUIRY_DOCUMENT);
     $this->db->where('sup_id',$meta);
     return $this->db->get()->result();
 }
+
 function update_qnuiry_data($enc,$id){
     $this->db->set($enc);
     $this->db->where('id',$id);
     $this->db->update(TBL_SUPPLIER_ADD_FRANCHISE);
-
 }
 
 function update_assign_country($country,$user_id){
@@ -1083,7 +1090,7 @@ function noti_edit($supplier) {
     }   
 function currency_edit($supplier) {
         $this->db->where('id', $supplier['id']);
-        if($this->db->update(TBL_READ_NOTIFICATION, $supplier)) {
+        if($this->db->update(TBL_CURRENCY, $supplier)) {
             return $supplier['id'];
         } else {
             return false;
@@ -1287,7 +1294,7 @@ function get_flights_record($id){
 
 function get_passbook_records($form="",$to=""){
 
-   $this->db->select('amount,ref_type,service_type,ref_id,payment_type,contact,( CASE WHEN payment_type = 1 THEN "CREDIT" ELSE "DEBIT" END) AS ptype,created_at,( CASE WHEN service_type = 1 THEN "FLIGHT" WHEN service_type = 4 THEN "Softwere Monthly Charge Auto debit" WHEN service_type = 3 THEN "VISA" WHEN service_type = 6 THEN "Free Coupon" WHEN service_type = 7 THEN "Cash Hand"  ELSE "In Comming" END) AS servisetype , sum(case when payment_type = 0 then -amount when payment_type = 1 then amount  end) over(order by id rows unbounded preceding) as balance');
+   $this->db->select('amount,ref_type,service_type,booking_detail,ref_id,payment_type,contact,( CASE WHEN payment_type = 1 THEN "CREDIT" ELSE "DEBIT" END) AS ptype,created_at,( CASE WHEN service_type = 1 THEN "FLIGHT" WHEN service_type = 4 THEN "Softwere Monthly Charge Auto debit" WHEN service_type = 3 THEN "VISA" WHEN service_type = 6 THEN "Free Coupon" WHEN service_type = 7 THEN "Cash Hand"  ELSE "In Comming" END) AS servisetype , sum(case when payment_type = 0 then -amount when payment_type = 1 then amount  end) over(order by id rows unbounded preceding) as balance');
 
 /*$this->db->select('amount,ref_type,service_type,ref_id,payment_type,contact,( CASE WHEN payment_type = 1 THEN "CREDIT" ELSE "DEBIT" END) AS ptype,created_at,( CASE WHEN service_type = 1 THEN "FLIGHT" WHEN service_type = 4 THEN "Softwere Monthly Charge Auto debit" WHEN service_type = 3 THEN "VISA" ELSE "In Comming" END) AS servisetype');*/
 
@@ -1386,6 +1393,13 @@ return array();
 }
 
 
+public function get_supplier_form_data($supplier_id){
+        $this->db->select('*');
+        $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE);
+        $this->db->where('id',$supplier_id);
+        return $this->db->get()->row();
+    }
+
 
 function fetch_whatsup_desc_by_id($id){
     $this->db->select('*');
@@ -1467,12 +1481,13 @@ return array();
 
 function fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country=array(),$enquiry_from,$enquiry_to,$status,$city=array(),$enquiry_type=0,$reason_type=0){
 
+    
 
-    $this->db->select('saf.id,saf.name,saf.email,saf.company,saf.mobile_no,saf.enquiry_type,saf.visa_id,saf.city,saf.language,saf.s_description,saf.description,saf.supplier_id,saf.follow_up_date,saf.biomatric_date,saf.interview_date,saf.intersted_country,saf.created_at,saf.pool_status as current_pull, saf.passport_no,saf.p_valid_from,saf.p_valid_to,pm.name as enquiry_type_name,pm.meta_id as enquiry_type_id,u.first_name as staff_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,count(ed.sup_id) as dtotal');
+    $this->db->select('saf.id,saf.name,saf.email,saf.visa_name,saf.intersted_country_name,saf.company,saf.mobile_no,saf.enquiry_type,saf.visa_id,saf.city,saf.language,saf.s_description,saf.description,saf.supplier_id,saf.follow_up_date,saf.biomatric_date,saf.interview_date,saf.intersted_country,saf.created_at,saf.pool_status as current_pull, saf.passport_no,saf.p_valid_from,saf.p_valid_to,pm.name as enquiry_type_name,pm.meta_id as enquiry_type_id,u.first_name as staff_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,count(ed.sup_id) as dtotal');
     $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE . ' saf');
     $this->db->join(TBL_USERS . ' u','saf.enquiry_staff_id = u.user_id','left');
     $this->db->join(TBL_PACKAGE_META . ' pm','saf.enquiry_type=pm.meta_id','left');
-    $this->db->join(TBL_ENQUIRY_DOCUMENT . ' ed','saf.id=ed.sup_id','LEFT');
+    $this->db->join(TBL_ENQUIRY_DOCUMENT . ' ed','saf.id=ed.sup_id','left');
 
     //$this->db->join("($subquery)  t2","t2.sup_id = saf.id");
     
@@ -1500,7 +1515,7 @@ function fetch_settings_report_data($follow_up_date,$language,$s_description,$st
     }
 
     if($enquiry_from != "" && $enquiry_to != ""){
-        $this->db->where('DATE(created_at) BETWEEN "'. date('Y-m-d', strtotime($enquiry_from)). '" and "'. date('Y-m-d', strtotime($enquiry_to)).'"');
+        $this->db->where('DATE(saf.created_at) BETWEEN "'. date('Y-m-d', strtotime($enquiry_from)). '" and "'. date('Y-m-d', strtotime($enquiry_to)).'"');
     }
     if(isset($enquiry_from) && $enquiry_from != "" && $enquiry_to == ""){
         $this->db->where('DATE(created_at)',date('Y-m-d',strtotime($enquiry_from)));
@@ -1514,8 +1529,7 @@ function fetch_settings_report_data($follow_up_date,$language,$s_description,$st
     }
 
 
-
-    if(!empty($i_country)){
+    if(is_array($i_country)){
      $this->db->group_start();
      foreach($i_country as $value)
      {
@@ -1569,7 +1583,7 @@ return array();
 
 
 function fetch_settings_report_detail_data($status,$uname="",$email="",$number=""){
-    $this->db->select('saf.id,saf.name,saf.email,saf.company,saf.mobile_no,saf.enquiry_type,saf.city,saf.language,saf.visa_id,saf.s_description,saf.description,saf.supplier_id,saf.follow_up_date,saf.biomatric_date,saf.interview_date,saf.intersted_country,saf.created_at,saf.pool_status as current_pull,saf.passport_no,saf.p_valid_from,saf.p_valid_to,pm.name as enquiry_type_name,pm.meta_id as enquiry_type_id,u.first_name as staff_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,count(ed.sup_id) as dtotal');
+    $this->db->select('saf.id,saf.name,saf.email,saf.visa_name,saf.intersted_country_name,saf.company,saf.mobile_no,saf.enquiry_type,saf.city,saf.language,saf.visa_id,saf.s_description,saf.description,saf.supplier_id,saf.follow_up_date,saf.biomatric_date,saf.interview_date,saf.intersted_country,saf.created_at,saf.pool_status as current_pull,saf.passport_no,saf.p_valid_from,saf.p_valid_to,pm.name as enquiry_type_name,pm.meta_id as enquiry_type_id,u.first_name as staff_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,count(ed.sup_id) as dtotal');
     $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE . ' saf');
     $this->db->join(TBL_PACKAGE_META . ' pm','saf.enquiry_type=pm.meta_id','left');
     $this->db->join(TBL_USERS . ' u','saf.enquiry_staff_id = u.user_id','left');
@@ -1720,7 +1734,7 @@ function fetch_interview_pool_data($pool_id,$enquiry_type_id=0,$staff_id=0,$star
 
 }
 function fetch_pool_data($pool_id,$enquiry_type_id=0,$staff_id=0){
-    $query =  $this->db->select('sf.id,sf.name,sf.email,sf.company,sf.follow_up_date,sf.biomatric_date,sf.created_at,sf.interview_date,sf.visa_id,sf.intersted_country,sf.description,sf.pool_status,sf.mobile_no,u.first_name as staff_name,tm.name as enquiry_type_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = sf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = sf.email) THEN "yes" ELSE "no" END as emailpassing,GROUP_CONCAT(co.name SEPARATOR ", ") AS countryname,count(ed.sup_id) as dtotal');
+    $query =  $this->db->select('sf.id,sf.name,sf.email,sf.company,sf.enquiry_name,sf.intersted_country_name,sf.visa_name,sf.follow_up_date,sf.biomatric_date,sf.created_at,sf.interview_date,sf.visa_id,sf.intersted_country,sf.description,sf.pool_status,sf.mobile_no,u.first_name as staff_name,tm.name as enquiry_type_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = sf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = sf.email) THEN "yes" ELSE "no" END as emailpassing,GROUP_CONCAT(co.name SEPARATOR ", ") AS countryname,count(ed.sup_id) as dtotal');
     $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE . ' sf');
     $this->db->join(TBL_USERS . ' u','sf.enquiry_staff_id = u.user_id','left');
     //$this->db->join(TBL_ENQUIRY_CATEGORY_ICON_TBL . ' eit','sf.enquiry_type = eit.enquiry_id','left');
@@ -1883,6 +1897,7 @@ function fetch_all_today_followup_data(){
  $this->db->order_by('follow_up_date','desc');
  return $this->db->get()->result();
 }
+
 function fetch_all_todays_followup_data($today_date,$enquiry_type_id=0,$staff_id=0){
  $this->db->select('saf.*,u.first_name as staff_name,saf.visa_id,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,tm.name as enquiry_type_name,tm.meta_id as enquiry_type_id,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,GROUP_CONCAT(co.name SEPARATOR ", ") AS countryname,count(ed.sup_id) as dtotal');
  $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE . ' saf');
@@ -1912,9 +1927,10 @@ function fetch_all_todays_followup_data($today_date,$enquiry_type_id=0,$staff_id
 if($enquiry_type_id > 0){
  $this->db->where('saf.enquiry_type',$enquiry_type_id);
 }
-$this->db->order_by('saf.follow_up_date','desc');
+$this->db->order_by('DATE(saf.created_at)','DESC');
 $this->db->group_by('saf.id');
 return $this->db->get()->result();
+
 }
 
 
@@ -1956,12 +1972,15 @@ function fetch_all_upcommingdeadline($enquiry_from="",$enquiry_to="",$date=""){
     if($this->session->userdata('user_role') == User_role::FRANCHISE_STAFF){
         $this->db->where('saf.enquiry_staff_id',$this->session->userdata('user_id'));
     }
+
      if($enquiry_from > 0 && $enquiry_to > 0){
         $this->db->where('DATE(biomatric_date) BETWEEN "'. date("Y-m-d",strtotime($enquiry_from)). '" and "'. date("Y-m-d",strtotime($enquiry_to)).'"');
     }
+
     if($date != "" && $date != ""){
         $this->db->where('DATE(biomatric_date) BETWEEN "'. date('Y-m-d'). '" and "'. date('Y-m-d', strtotime($date)).'"');
     }
+
     //$this->db->where('saf.biomatric_date','');
     $this->db->where('saf.pool_status !=',Enquiry_pool_status::FINALIZE);
  
@@ -1997,6 +2016,7 @@ function fetch_all_upcommingdeadline_count($date=""){
     $this->db->order_by('saf.follow_up_date','desc');
 
     $query = $this->db->get();
+    
         if($query->num_rows() > 0){
              return $query->num_rows();
         }
@@ -2520,11 +2540,13 @@ function get_wap_by_enquiry_id($id){
 }
 
 function get_franchise_name_by_franch_staff($f_name){
- $this->db->select('first_name,last_name');
+ $this->db->select('first_name,last_name,firm_name,email');
  $this->db->from(TBL_USERS);
  $this->db->where('user_id',$f_name);
  return $this->db->get()->row();
 }
+
+
 
 function get_descriptions_of_master_module(){
     $this->db->select('meta_id,name');
