@@ -1,87 +1,62 @@
 <div class="table-responsive">
-
-   <table class="table table-bordered text-nowrap border-bottom" id="responsive-datatable">
-                 <thead>
-                    <tr>
-                        <th width="wd-15p border-bottom-0" style="width:20%"> Name </th>
-                        <th width="wd-15p border-bottom-0" style="width:10%"> Mobile </th>
-                        <!-- <th width="wd-15p border-bottom-0" style="width:10%"> Enquiry Type </th> -->
-                        <th width="wd-15p border-bottom-0" style="width:10%"> Follow Up Date </th>
-                        <th width="wd-15p border-bottom-0" style="width:10%"> Action</th>
-                    </tr>
-                 </thead>
-                <tbody>
-           <?php
-           $index = 1;
-           foreach($_view as $view){ ?>
-              <tr>
-               
-               <td><div class="cell_content"><p>
-
-         <?php
-        $date = date('Y-m-d',strtotime($view->created_at));
-        $startTimeStamp = strtotime($date);
-
-        $endTimeStamp = strtotime(date('Y-m-d'));
-        $timeDiff = abs($endTimeStamp - $startTimeStamp);
-        if($view->company != ""){
-          ?><img src="<?php echo base_url('assets/img/bo.svg');  ?>" ><?php echo '<b>&nbsp;&nbsp;</b>'; ?><?php 
+<style>
+        [v-cloak] {
+            display: none;
         }
-        echo $view->name;
-        
-      ?>&nbsp;(<?= isset($view->expriry_type_name) && $view->expriry_type_name != "" ? $view->expriry_type_name :"-"; ?>)&nbsp;<?php
-      if(isset($view->enquiry_type_name) && $view->enquiry_type_name != ""){
-         echo '('.$view->enquiry_type_name.")"; 
-      }   
-      
-      if($view->intersted_country != ""){
-       $country = explode(",",$view->intersted_country);
-       $allcountryname = array();
-        for($i=0;$i<count($country);$i++){ //echo $country[$i]; exit;
-           $from = $this->setting_model->get_api_country_by_id($country[$i]);
-           $allcountryname[] = $from->countrydata[0]->name;
-         } 
-         echo ' ('.implode(",", $allcountryname).')';
-       
-      }
-       if($view->visa_id != ""){
-       $visaid = explode(",",$view->visa_id);
-       $allvisaname = array();
-        for($j=0;$j<count($visaid);$j++){ 
-             $visaidval = $this->setting_model->get_api_visaname_by_id($visaid[$j]);
-            $allvisaname[] =  $visaidval->visaname->name;
-         } 
-        echo ' ('.implode(",", $allvisaname).')';
-
-      }
-   ?>
-    <?php  
-
-     if($view->visa_id != ""){ 
-      //$visafee = $this->setting_model->get_api_servicecharge($view->visaserviceid);  
-$visafee = $this->setting_model->get_api_servicecharge($view->visa_id,$view->intersted_country);  
-      $service = explode("-",$visafee->visaservice->service_charge);
-      $service = $service[0];
-     }else{
-      $service= "";
-     }
-     
-   ?>
-   </p>
-
-            </td>
-               <td><?= $view->mobile_no ?></td>
-              
-               <!--  <td><?= isset($view->expriry_type_name) && $view->expriry_type_name != "" ? $view->expriry_type_name :"-"; ?></td> -->
-               <td><?= $view->follow_up_date != "0000-00-00" ? date('d-M-Y',strtotime($view->follow_up_date)) : ""; ?></td>
-               <td><div class="tbl-action-wrap"> <a class="box-btn bg-transparent add_interview_click" data-bs-target="#add_interview" data-bs-toggle="modal" href="javascript:void(0)" value="<?= $view->id ?>"  data-toggle="tooltip" data-placement="top" title="Add Follow Up">
-<img src="<?php echo base_url('assets/img/add.svg');  ?>" >
-Add deadline</a></div></td>
-       </tr>
-
-    <?php  } ?>
- </tbody>
-            </table>
+    </style>   
+<script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
+<div id="firstApp" v-cloak>
+   
+        <table class="table table-bordered text-nowrap border-bottom" id="responsive-datatable2">
+            <thead>
+                <tr>
+                    <th width="wd-15p border-bottom-0" style="width:20%"> Name </th>
+                    <th width="wd-15p border-bottom-0" style="width:10%"> Mobile </th>
+                    <th width="wd-15p border-bottom-0" style="width:10%"> Follow Up Date </th>
+                    <th width="wd-15p border-bottom-0" style="width:10%"> Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="view in dataFromServer" :key="view.id">
+                    <td>
+                        <div class="cell_content">
+                            <p>
+                                <img v-if="view.company" src="<?php echo base_url('assets/img/bo.svg');  ?>">
+                                <b v-if="view.company">&nbsp;&nbsp;</b>
+                                {{ view.name }}
+                                &nbsp;({{ view.expriry_type_name || '-' }})
+                                <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+                                <span v-if="view.interested_country">
+                                    (
+                                    <span v-for="(country, index) in view.interested_country.split(',')" :key="index">
+                                        {{ getCountryNameById(country) }}<span v-if="index < view.interested_country.split(',').length - 1">,</span>
+                                    </span>
+                                    )
+                                </span>
+                                <span v-if="view.visa_id">
+                                    (
+                                    <span v-for="(visa, index) in view.visa_id.split(',')" :key="index">
+                                        {{ view.visa_name }}<span v-if="index < view.visa_id.split(',').length - 1">,</span>
+                                    </span>
+                                    )
+                                </span>
+                            </p>
+                        </div>
+                    </td>
+                    <td>{{ view.mobile_no }}</td>
+                    <td>{{ formatFollowUpDate(view.follow_up_date) }}</td>
+                    <td>
+                        <div class="tbl-action-wrap">
+                            <a class="box-btn bg-transparent add_interview_click" data-bs-target="#add_interview" data-bs-toggle="modal" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up">
+                                <img src="<?php echo base_url('assets/img/add.svg');  ?>"> Add deadline
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+   
 </div>
 
 
@@ -229,3 +204,98 @@ $(document).on('submit','.interview_form',function(e){
 });
 });
 </script>
+
+
+
+
+
+<script >
+ 
+    const { createApp, ref, watch ,nextTick} = Vue;
+
+document.addEventListener('DOMContentLoaded', () => {
+ 
+   const { createApp } = Vue;
+ 
+   const dataFromServer = ref([]);
+
+const app = createApp({
+   
+    data() {
+      
+        return {
+         currentPage: 1,
+         dataTable:null,
+         dataFromServer,
+                totalPages: 1,
+            message: ''
+        };
+    },
+    watch: {
+      dataFromServer(newValue, oldValue) {
+          
+         if(this.dataTable)
+            {
+
+                  console.log( this.dataTable);
+                  this.dataTable.destroy();
+            }
+         nextTick(() => {
+           
+         
+ 
+           this.dataTable= $('#responsive-datatable2').DataTable({
+        order: [[2, 'asc']],
+       });
+                 
+                 
+                });
+
+         
+        }
+    },
+    methods:
+   {
+      formatFollowUpDate(date) {
+                        return date !== "0000-00-00" ? new Date(date).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                        }) : "";
+                    },
+    
+      fetchData() {
+          
+         this.dataFromServer = <?=json_encode($_view,true)?>;
+            },
+      getFormValues()
+      {
+        $('.detail_search')[0].reset();
+        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray() );
+      },
+      getFormValuesSimple()
+      {
+        $(".enquiry_type").val('').trigger('change');
+     $('.passport_date').val(null).trigger("change");
+    $('.enquiry_page_report')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_drop_detail_report');
+      }
+   },
+    
+    mounted() {
+     
+      this.fetchData();
+
+    },
+    beforeDestroy() {
+    // Destroy the DataTable instance to prevent memory leaks
+    if (this.dataTable) {
+      this.dataTable.destroy();
+    }
+  }
+   });
+
+app.mount('#firstApp');
+});
+</script>
+

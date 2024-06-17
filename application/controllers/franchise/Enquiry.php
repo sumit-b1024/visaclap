@@ -18,10 +18,9 @@ class Enquiry extends MY_Controller
 
 	function fetch_process_pool_data(){
 		$data['fetch_process_enquiry_data'] = $this->setting_model->fetch_pool_data(Enquiry_pool_status::PROCESS,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
-		/*echo '<pre>';
-		print_r($data['fetch_process_enquiry_data']);
-		exit;*/
-		$this->load->view('console/enquiry/view_process_pool_tbl', $data);
+		
+		$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+	//	$this->load->view('console/enquiry/view_process_pool_tbl', $data);
 	}
 	function fetch_date_process_pool_data(){
 		$data['fetch_process_enquiry_data'] = $this->setting_model->fetch_interview_pool_data(Enquiry_pool_status::PROCESS,$this->input->post('enquiry_type'),$this->input->post('staff_id'),$this->input->post('startdate'),$this->input->post('enddate'));
@@ -70,21 +69,32 @@ class Enquiry extends MY_Controller
 		
 		//echo '<pre>';
 		//print_r($data['_view']); exit;
-		$this->load->view('console/enquiry/follow_up/today_follow_up',$data);
+		$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+		//$this->load->view('console/enquiry/follow_up/today_follow_up',$data);
 	}
 
 	function get_all_yesterday_follow_up_data(){
 		$yester_day_date = date('Y-m-d',strtotime('-1 day'));
 		$data['_view'] = $this->setting_model->fetch_all_todays_followup_data($yester_day_date,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
-		$this->load->view('console/enquiry/follow_up/yesterday_follow_up',$data);
+		$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+	//	$this->load->view('console/enquiry/follow_up/yesterday_follow_up',$data);
+	}
+
+	function get_visa_service_fees()
+	{
+		 
+		$data=($this->setting_model->get_api_servicecharge($_POST['visaid'],$_POST['interested_country']));
+		$this->output->set_content_type('application/json')->set_output(json_encode($data));
+		
 	}
 
 	function get_all_missed_follow_up_data(){
 		$yester_day_date = date('Y-m-d',strtotime('-2 days'));
 		$data['_view'] = $this->setting_model->fetch_all_yesterday_followup_data($yester_day_date,$this->input->post('enquiry_type'),$this->input->post('staff_id'));
 		// $data['_view'] = $this->setting_model->get_all_enquiry_list_data();
+		$this->output->set_content_type('application/json')->set_output(json_encode($data));
 		
-		$this->load->view('console/enquiry/follow_up/missed_follow_up',$data);
+		//$this->load->view('console/enquiry/follow_up/missed_follow_up',$data);
 	}
 
 	function drop_pool_data(){

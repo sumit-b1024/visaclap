@@ -78,12 +78,17 @@ class Reports extends MY_Controller
 			$email = $post['email'];
 			$number = $post['number'];
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_detail_data(0,$uname,$email,$number);
-			$this->load->view('console/reports/view_enquiry_report_page',$data);
+			$this->output
+			->set_content_type('application/json')
+			->set_output(json_encode($data));
+			//$this->load->view('console/reports/view_enquiry_report_page',$data);
 		}
 	}
 
 	function generate_finalize_enquiry_report(){	
+		 
 		if($this->input->post()){
+		 
 			$post = $this->input->post();
 			$follow_up_date = $post['follow_up_date'];
 			$language = $post['language'];
@@ -97,12 +102,11 @@ class Reports extends MY_Controller
 			$s_description = $post['s_description'];
 			$reason_type = $post['reason_type'];
 			$staff_id = $post['enquiry_staff_id'];
-			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::FINALIZE,array(),$enquiry_type,$reason_type);
+			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::FINALIZE,$enquiry_type,$reason_type);
 			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
-			//$this->load->view('console/reports/view_finalize_enquiry_report_page',$data);
 		}
 	}
-
+	 
 	function generate_finalize_detail_report(){	
 		if($this->input->post()){
 			$post = $this->input->post();
@@ -130,9 +134,10 @@ class Reports extends MY_Controller
 			$reason_type = $post['reason_type'];
 			$staff_id = $post['enquiry_staff_id'];
 			
-			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::DROP,array(),$enquiry_type,$reason_type);
+			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::DROP,$enquiry_type,$reason_type);
 			$data['company_permission'] = $this->setting_model->get_booking_profit();
-			$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
+			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+			//$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
 		}
 	}
 
@@ -144,8 +149,8 @@ class Reports extends MY_Controller
 			$number = $post['number'];
 			$data['fetch_enquiry_array'] = $this->setting_model->fetch_settings_report_detail_data(Enquiry_pool_status::DROP,$uname,$email,$number);
 			$data['company_permission'] = $this->setting_model->get_booking_profit();
-
-			$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
+			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+		//	$this->load->view('console/reports/view_drop_enquiry_report_page',$data);
 		}
 	}
 
@@ -164,10 +169,11 @@ class Reports extends MY_Controller
 			$enquiry_type = $post['enquiry_type'];
 			$reason_type = $post['reason_type'];
 			$staff_id = $post['enquiry_staff_id'];
-			$data['fetch_process_enquiry_data'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::PROCESS,array(),$enquiry_type,$reason_type);
+			$data['fetch_process_enquiry_data'] = $this->setting_model->fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country,$enquiry_from,$enquiry_to,Enquiry_pool_status::PROCESS,$enquiry_type,$reason_type);
 			/*echo '<pre>';
 			print_r($data['fetch_process_enquiry_data']); exit;*/
-			$this->load->view('console/reports/view_process_enquiry_report_page',$data);
+			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+			//$this->load->view('console/reports/view_process_enquiry_report_page',$data);
 		}
 	}
 
@@ -178,7 +184,8 @@ class Reports extends MY_Controller
 			$email = $post['email'];
 			$number = $post['number'];
 			$data['fetch_process_enquiry_data'] = $this->setting_model->fetch_settings_report_detail_data(Enquiry_pool_status::PROCESS,$uname,$email,$number);
-			$this->load->view('console/reports/view_process_enquiry_report_page',$data);
+			$this->output->set_content_type('application/json')->set_output(json_encode($data)); 
+			//$this->load->view('console/reports/view_process_enquiry_report_page',$data);
 		}
 	}
 

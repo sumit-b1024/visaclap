@@ -3,7 +3,14 @@
   color: red;
 }
 </style>   
- 
+<style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+<script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
+
+<div id='firstApp' v-cloak>
 <h6 class="primary-title1 mb-0" style="    color: #575757;">Select Filter </h6><br>
 <div class="row row-sm">
  <div class="col-lg-12">
@@ -12,7 +19,7 @@
 
      <div class="card">
        <div class="card-body">
-         <form class="enquiry_page_report">
+         <form class="enquiry_page_report" @submit.prevent="getFormValues">
            <div class="row">
              <div class="col-sm-3 col-md-2 input-inside mb-1">
                <label class="form-label">Follow Up Date</label>
@@ -41,7 +48,7 @@
              <div class="col-sm-3 col-md-3">
               <div class="form-group input-inside">
                 <label class="form-label"> Intersted Country</label>
-                 <select name="i_country[]" id="i_country" data-placeholder="Intersted Country" class="i_country form-select">
+                 <select name="i_country" id="i_country" data-placeholder="Intersted Country" class="i_country form-select">
                 </select>
               </div>
             </div>
@@ -118,7 +125,7 @@
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         Loading...
       </button>
-      <button type="button" class="box-btn fil_gray reset_btn" style="
+      <button type="button" class="box-btn fil_gray reset_btn"  @click="reset" style="
       margin-top: 25px;">Reset</button>
     </div>
 
@@ -134,7 +141,7 @@
  <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
-           <form class="detail_search">
+           <form class="detail_search" @submit.prevent="getFormValuesSimple">
             <div class="row input-inside">
                 <div class="col-sm-2 col-md-3">
                    <div class="form-group">
@@ -161,7 +168,7 @@
                       <span class="spinner- border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Loading...
                   </button>
-                  <button type="button" class="box-btn fil_gray reset_btn_detail" style="
+                  <button type="button" class="box-btn fil_gray reset_btn_detail"  @click="resetDetail" style="
                   margin-top: 25px;">Reset</button>
               </div>
            </div> 
@@ -186,6 +193,80 @@
 </div>
 <div class="card-body">
   <div class="table-responsive" id="finalize_pool_data">
+                
+  <table class="table table-bordered text-nowrap border-bottom" id="drop_enquiry_report_pool">
+ <thead>
+    <tr>
+       <th width="wd-15p border-bottom-0" style="width:8%;">
+        <label class="custom-control custom-checkbox-md">
+         <input type="checkbox" class="custom-control-input" id="pool_drop_th" name="example-checkbox1" value="option1" >
+         <span class="custom-control-label"></span>
+      </label>
+   </th>
+   <th class="wd-15p border-bottom-0">Name</th>
+   <th class="wd-15p border-bottom-0" >Mobile No</th>
+   
+   <th width="wd-15p border-bottom-0"> Created </th> 
+   <th class="wd-15p border-bottom-0" >Follow Up Date</th>
+   
+   <!-- <th class="wd-15p border-bottom-0" >Pool Status</th> -->
+   <th class="wd-15p border-bottom-0" >Action</th>
+</tr>
+</thead>
+<tbody>
+        <tr v-for="template in dataFromServer" :key="template.id">
+          <td>
+            <label class="custom-control custom-checkbox-md">
+              <input type="checkbox" class="custom-control-input pool_drop_td" :value="template.id">
+              <span class="custom-control-label"></span>
+            </label>
+          </td>
+          <td>
+            <div class="cell_content">
+              <p>
+                {{ template.name }}
+                <?php 
+
+if($this->session->userdata('user_role') == User_role::FRANCHISE ){
+  echo '<span v-if="template.staff_name" class="d-inine orange-text">({{ template.staff_name }})</span>';
+}
+                ?>
+              
+                <span class="d-inine orange-text">({{ Math.round((new Date()-new Date(template.created_at) ) / (1000 * 60 * 60 * 24)) }} Days)</span>
+              </p>
+              <p class="fonts11">
+                <span v-if="template.enquiry_type_name">({{ template.enquiry_type_name }})</span>
+                <span v-if="template.intersted_country">
+                  ({{  template.intersted_country_name }})
+                </span>
+                <span v-if="template.visa_id">
+                  ({{ template.visa_name }})
+                </span>
+              </p>
+              <div class="type-actions">
+                <button v-if="template.enquiry_type_id == '32'" class="new_change_process_pool_status" :data-service="template.service" :pool_record_id="template.id" value="1">Process Pool</button>
+                <button v-else class="change_process_pool_status" :pool_record_id="template.id" value="1">Process Pool</button>
+              </div>
+            </div>
+          </td>
+          <td>{{ template.mobile_no }}</td>
+          <td>{{ new Date(template.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) }}</td>
+          <td>{{ new Date(template.follow_up_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) }}</td>
+          <td>
+            <div class="tbl-action-wrap">
+              <button type="button" class="single-action whatsapp open_whatsup_modal" :value="template.id"><img src="<?php echo base_url('assets/img/whatsapp.svg');  ?>"></button>
+              <button type="button" class="single-action btn-sm mr-2" title="View" id="view_pool_des" :value="template.id"><img src="<?= $template->id ?>">
+           <img src="<?php echo base_url('assets/img/eye.svg');  ?>"></button>
+              <a class="box-btn bg-transparent add_followup_click" data-bs-target="#add_followup" data-bs-toggle="modal" href="javascript:void(0)" :value="template.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up">Follow Up</a>
+              <a v-if="('<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>' || '<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE_STAFF?>') && template.passing == 'yes' && template.mobile_no" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="template.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <a v-if="('<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>' || '<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE_STAFF?>') && template.emailpassing == 'yes' && template.email" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="template.email" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <button v-if="template.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="template.id" data-toggle="tooltip" data-placement="top" title="View Document"><i class="fa fa-file"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+</table>
+
 
   </div>
 </div>
@@ -364,6 +445,80 @@
 </div>
 <!-- modal end -->
 </div>
+</div>
+</div>
+
+
+
+ <!-- Model For Show Follow Up -->
+ <div class="modal fade bd-example-modal-lg" id="visa_template_model">
+   <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content modal-content-demo">
+         <form class="send_email_template_form">
+            <div class="modal-header">
+               <h6 class="modal-title"><b>Send Email</b></h6><button type="button" aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body visa_data_number">
+              
+            
+         </div>
+
+         <div class="modal-footer">
+           <div class="spinner-border text-primary email_spinner" style="display:none" role="status">
+             <span class="sr-only">Loading...</span>
+          </div>
+          
+          <button type="button" class="box-btn fil_gray btn_cancel" data-bs-dismiss="modal">Close</button>
+       </div>
+    </form>
+ </div>
+</div>
+</div>
+
+<!-- Model For Show enquiry document-->
+<div class="modal fade bd-example-modal-lg" id="view_enquiry_document_model">
+   <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content modal-content-demo">
+         <form class="">
+            <input type="hidden" name="record_id" id="record_id">
+            <div class="modal-header">
+               <h6 class="modal-title"><b>View All Document</b></h6><button type="button" aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+            </div>
+
+            <div class="modal-body enquiry_document_body">
+            </div>
+
+            <div class="modal-footer">
+               <button type="button" class="box-btn fil_gray btn_cancel" data-bs-dismiss="modal">Close</button>
+            </div>
+         </form>
+      </div>
+   </div>
+</div>
+
+ <div class="card">
+
+
+   <!-- Model For Show Follow Up -->
+   <div class="modal fade bd-example-modal-lg" id="view_application_preview">
+      <div class="modal-dialog modal-xl" role="document">
+         <div class="modal-content modal-content-demo">
+            <form class="">
+               <input type="hidden" name="record_id" id="record_id">
+               <div class="modal-header">
+                  <h6 class="modal-title"><b>Application Visa</b></h6><button type="button" aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+               </div>
+               
+               <div class="modal-body application_preview_div">
+               </div>
+
+               <div class="modal-footer">
+                  <button type="button" class="box-btn fil_gray btn_cancel" data-bs-dismiss="modal">Close</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
 </div>
 
 <script
@@ -676,18 +831,8 @@ $(document).on('submit','.followup_form',function(e){
   });
   // });
 
-  $(document).on('submit', '.enquiry_page_report',function(e){
-    e.preventDefault();
-    $('.detail_search')[0].reset();
-    get_enquiry_report_data();
-  });
-  $(document).on('submit', '.detail_search',function(e){
-    e.preventDefault();
-    $(".enquiry_type").val('').trigger('change');
-     $('.passport_date').val(null).trigger("change");
-    $('.enquiry_page_report')[0].reset();
-    get_detail_data();
-  });
+ 
+ 
 
 
   function get_detail_data(){
@@ -811,7 +956,7 @@ if ($(".followup").length > 0) {
     });
     });
 
-    get_enquiry_report_data();
+   // get_enquiry_report_data();
  //  $(document).on('click', '.change_pool_status', function () {
 
  //    $('#pool_status_modal').modal('show');
@@ -866,22 +1011,7 @@ if ($(".followup").length > 0) {
 
  // });
 
- $(document).on('click', '.reset_btn',function(e){
-   $('.enquiry_page_report')[0].reset();
-   $('.language').val(null).trigger("change");
-   $('.s_description').val(null).trigger("change");
-   $(".enquiry_type").val(null).trigger('change');
-   $('.i_country').val(null).trigger("change");
-   $('.reason_type').val(null).trigger("change");
-   $('.name').val(null).trigger("change");
-   $('.email').val(null).trigger("change");
-   $('.number').val(null).trigger("change");
-   get_enquiry_report_data();
- });
- $(document).on('click', '.reset_btn_detail',function(e){
-    $('.detail_search')[0].reset();
-   get_detail_data(); 
-});
+ 
 
  $(document).on('click', '#view_pool_des',function(e){
    var record_id = $(this).val();
@@ -929,7 +1059,7 @@ const app = createApp({
     },
     watch: {
       dataFromServer(newValue, oldValue) {
-         alert();
+          
          if(this.dataTable)
             {
 
@@ -940,7 +1070,7 @@ const app = createApp({
            
           
  
-           this.dataTable= $('#finalize_enquiry_report_pool').DataTable({
+           this.dataTable= $('#drop_enquiry_report_pool').DataTable({
         order: [[4, 'desc']],
        });
                  
@@ -952,15 +1082,33 @@ const app = createApp({
     },
     methods:
    {
+    resetDetail()
+      {
+         $('.detail_search')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_drop_detail_report');
+      },
+   reset()
+   {
+    $('.enquiry_page_report')[0].reset();
+   $('.language').val(null).trigger("change");
+   $('.s_description').val(null).trigger("change");
+   $(".enquiry_type").val(null).trigger('change');
+   $('.i_country').val(null).trigger("change");
+   $('.reason_type').val(null).trigger("change");
+   $('.name').val(null).trigger("change");
+   $('.email').val(null).trigger("change");
+   $('.number').val(null).trigger("change");
+      this.fetchData(this.page,$('.enquiry_page_report').serializeArray());
+   },
     
-      fetchData(page,formData) {
+      fetchData(page,formData,endpoint='generate_drop_enquiry_report') {
           
                 const self = this;  // Preserve the Vue instance context
 
                 $.ajax({
-      url : base_url+'franchise/reports/generate_finalize_enquiry_report',
+      url : base_url+'franchise/reports/'+endpoint,
       type : "POST",
-      data : $('.detail_search').serializeArray(),
+      data : formData,
       success :function(data){
         
          self.dataFromServer = data.fetch_enquiry_array;
@@ -971,14 +1119,17 @@ const app = createApp({
     
       }});
             },
-            getFormValues()
+      getFormValues()
       {
-         
-        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
+        $('.detail_search')[0].reset();
+        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray() );
       },
       getFormValuesSimple()
       {
-         this.fetchData(this.currentPage);
+        $(".enquiry_type").val('').trigger('change');
+     $('.passport_date').val(null).trigger("change");
+    $('.enquiry_page_report')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_drop_detail_report');
       }
    },
     
@@ -999,3 +1150,213 @@ app.mount('#firstApp');
 });
 </script>
 
+
+
+<script type="text/javascript">
+
+
+
+$(document).on('click', '.get_visa_data', function () {
+ 
+  var number  =  $(this).attr('value');
+  $.ajax({
+    type: 'POST',
+    url: base_url + 'franchise/enquiry/view_all_visa_report',
+    data:{'number' : number},
+    success: function(result) {
+      $('.visa_data_number').html("");
+         // $('.follow_up_body').html("data");
+         $('.visa_data_number').html(result);
+         $('.visa_data_tbl').DataTable();
+         $('#visa_template_model').modal('show');
+
+         // $('#responsive-datatable').DataTable();
+      }
+   });
+
+});
+
+
+$(document).on('click', '.get_enquirey_document', function () {
+   
+  var id  =  $(this).attr('value');
+  $.ajax({
+    type: 'POST',
+    url: base_url + 'franchise/enquiry/view_all_enquiry_document',
+    data:{'id' : id},
+    success: function(result) {
+      $('.enquiry_document_body').html("");
+         $('.enquiry_document_body').html(result);
+         $('.enquiry_document_tbl').DataTable();
+         $('#view_enquiry_document_model').modal('show');
+      // $('#responsive-datatable').DataTable();
+      }
+   });
+
+});
+
+
+$(document).on('click','.view_application',function(){
+            var group_id = $(this).data('id');
+            $.ajax({
+             type: 'POST',
+             url: base_url + 'franchise/request/fetch_visaapplication_data_groupby',
+             data:{'group_id' : group_id},
+
+             success : function(data){
+               $('.application_preview_div').html("");
+               $('.application_preview_div').html(data);
+               $('#view_application_preview').modal('toggle');
+            }
+         });
+         });
+
+
+  $(document).on('click', '.new_change_process_pool_status', function () {
+
+   $('.pool_description').val('');
+
+   var cpermission = '<?php echo $company_permission->company_permission ?>';
+
+   var btn_val = $(this).val();
+   var pool_record_id = $(this).attr('pool_record_id');
+   var service = $(this).attr('data-service');
+   if(service != ""){
+      service = service;
+   }else{
+      service = "";
+      Swal.fire("Warning!", 'Service Fees Not define', "warning");
+      return;
+   }
+   $('#btn_val').attr('value', btn_val);
+   $('#pool_record_id').attr('value', record_id);
+   var userwallet = $("#userwallet").val();
+
+if(cpermission == 1){
+
+   Swal.fire({
+          title: 'Do you want to process this application or process by company?',
+          showDenyButton: true,
+          showCancelButton: true,
+          denyButtonColor: '#3085d6',
+          confirmButtonText: 'I will Process',
+          denyButtonText: `Backend will process`,
+        }).then((result) => {
+         
+          if (result.isConfirmed) {
+            var pool_status = 1;
+             $.ajax({
+              url : base_url + 'franchise/enquiry/add_pool_staus_description',
+              type : "POST",
+              data : {btn_val,pool_record_id,pool_status},
+              dataType: 'json',
+              success : function(data){
+                 if(data.status == 'success'){
+                   window.location = continue_to;
+                }else{
+                   Swal.fire("Warning!", data.message, "warning");
+                }
+             }
+          });
+
+          } else if (result.isDenied) {
+           
+            if(parseInt(userwallet) >= parseInt(service)){ 
+               var pool_status = 1;
+                   $.ajax({
+                    url : base_url + 'franchise/enquiry/service_charge_pull_status',
+                    type : "POST",
+                    data : {btn_val,pool_record_id,pool_status,service},
+                    dataType: 'json',
+                    success : function(data){
+                       if(data.status == 'success'){
+                         window.location = continue_to;
+                      }else{
+                         Swal.fire("Warning!", data.message, "warning");
+                      }
+                   }
+                }); 
+            }else{
+                 e.preventDefault();
+                Swal.fire('error!', "Please Check Your Balance", 'error');   
+            }
+          }
+        })
+   }else{
+       Swal.fire({
+          title: 'Do you want to process this application or process by company?',
+          showDenyButton: false,
+          showCancelButton: true,
+          denyButtonColor: '#3085d6',
+          confirmButtonText: 'I will Process',
+          denyButtonText: `Backend will process`,
+        }).then((result) => {
+         
+          if (result.isConfirmed) {
+            var pool_status = 1;
+             $.ajax({
+              url : base_url + 'franchise/enquiry/add_pool_staus_description',
+              type : "POST",
+              data : {btn_val,pool_record_id,pool_status},
+              dataType: 'json',
+              success : function(data){
+                 if(data.status == 'success'){
+                   window.location = continue_to;
+                }else{
+                   Swal.fire("Warning!", data.message, "warning");
+                }
+             }
+          });
+
+          } 
+        })
+
+   }
+   
+   var pool_status = 1;
+   
+});
+   $(document).on('click', '.change_process_pool_status', function () { 
+     var continue_to = base_url + 'franchise/enquiry/drop_pool_data';
+   $('.pool_description').val('');
+   //$('#pool_status_modal').modal('hide');
+   var btn_val = $(this).val();
+   var pool_record_id = $(this).attr('pool_record_id');
+   //alert($(this).val());
+   $('#btn_val').attr('value', btn_val);
+   $('#pool_record_id').attr('value', record_id);
+  
+   //$('#pool_review_form').submit();
+   //formdata = $('#pool_review_form').
+   
+   var pool_status = 1;
+    $.ajax({
+     url : base_url + 'franchise/enquiry/add_pool_staus_description',
+     type : "POST",
+     data : {btn_val,pool_record_id,pool_status},
+     dataType: 'json',
+     success : function(data){
+        if(data.status == 'success'){
+          //$('#pool_status_modal').modal('toggle');
+          window.location = continue_to;
+          /*Swal.fire("Success!", data.message, "success").then(function(){
+           if(data.pool_status=="1"){
+            var p_status =  "warning";
+         }else if(data.pool_status=="2"){
+            var p_status =  "success";
+         }else{
+            var p_status =  "danger";
+         } 
+         $('#pool_chane_i'+pool_record_id).attr('class','btn btn-'+p_status+' btn-sm');
+         get_process_pool_data();
+         get_all_today_follow_up_data();
+         get_all_yesterday_follow_up_data();
+         get_all_missed_follow_up_data();
+      });*/
+       }else{
+          Swal.fire("Warning!", data.message, "warning");
+       }
+    }
+ });
+});
+</script>

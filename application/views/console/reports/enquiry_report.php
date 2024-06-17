@@ -14,9 +14,14 @@ $walletuser =  $this->session->userdata('franchise_id');
 $wallet =  $this->setting_model->get_wallet($walletuser);
 
  ?>
+   <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
  <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
 
-<div id='firstApp'>
+<div id='firstApp' v-cloak>
 <input type="hidden" name="userwallet" id="userwallet" value="<?= ($wallet->balance) ?$wallet->balance :0; ?>">
  <h6 class="primary-title1 mb-0" style="    color: #575757;">Select Filter </h6><br>
           <form class="cmn-blk mb-4 enquiry_page_report" @submit.prevent="getFormValues">
@@ -189,13 +194,14 @@ $wallet =  $this->setting_model->get_wallet($walletuser);
                                         ({{  (template.visa_name) }})
                                     </span>
                                 </p>
+                                {{template.current_pull}}
                                 <div class="type-actions">
-                                    <button v-if="template.current_pull === 0" @click="processPool(template, 1)">Process Pool</button>
-                                    <button v-if="template.current_pull === 0" @click="changePoolStatus(template, 3)">Drop Pool</button>
-                                    <button v-if="template.current_pull === 1" @click="changePoolStatus(template, 2)">Finalize Pool</button>
-                                    <button v-if="template.current_pull === 1" @click="changePoolStatus(template, 3)">Drop Pool</button>
-                                    <button v-if="template.current_pull === 2 || template.current_pull === 3" @click="changePoolStatus(template, 2)">Finalize Pool</button>
-                                    <button v-if="template.current_pull === 3 || template.current_pull === 2" @click="processPool(template, 1)">Process Pool</button>
+                                    <button v-if="template.current_pull == 0" @click="processPool(template, 1)">Process Pool</button>
+                                    <button v-if="template.current_pull == 0"  >Drop Pool</button>
+                                    <button v-if="template.current_pull == 1"  >Finalize Pool</button>
+                                    <button v-if="template.current_pull == 1"  ">Drop Pool</button>
+                                    <button v-if="template.current_pull == 2 || template.current_pull == 3"  >Finalize Pool</button>
+                                    <button v-if="template.current_pull == 3 || template.current_pull == 2"  >Process Pool</button>
                                 </div>
                             </div>
                         </td>
@@ -1237,16 +1243,7 @@ $.ajax({
 
  
 
- $(document).on('submit', '.detail_search',function(e){
-    e.preventDefault();
-    
-    $(".enquiry_type").val('').trigger('change')
-    $(".s_description").val('').trigger('change')
-    $('.passport_date').val(null).trigger("change");
-    $('.enquiry_page_report')[0].reset();
-    get_enquiry_detail_data();
-  });
-
+ 
  function get_enquiry_detail_data(){
 
     $('.sub_btn_detail').attr('disabled', 'disabled');
@@ -1379,11 +1376,11 @@ const app = createApp({
       formatDate(date) {
                 return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
             },
-      fetchData(page,formData) {
+      fetchData(page,formData,endpoint='generate_enquiry_report') {
           
                 const self = this;  // Preserve the Vue instance context
                 $.ajax({
-                    url: base_url + 'franchise/reports/generate_enquiry_report',
+                    url: base_url + 'franchise/reports/'+endpoint,
                     type: "POST",
                     data: {
                         page: page,
@@ -1413,7 +1410,7 @@ const app = createApp({
       },
       getFormValuesSimple()
       {
-         this.fetchData(this.currentPage);
+         this.fetchData(this.currentPage,$('.detail_search').serializeArray(),'generate_enquiry_detail_report');
       }
    },
     

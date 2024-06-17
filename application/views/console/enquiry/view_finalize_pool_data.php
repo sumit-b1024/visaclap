@@ -3,8 +3,13 @@
       color: red;
    }
 </style>
+<style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
 <script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
-<div id='firstApp'>
+<div id='firstApp' v-cloak>
 <h6 class="primary-title1 mb-0" style="    color: #575757;">Select Filter </h6><br>
 <div class="row row-sm">
    <div class="col-lg-12">
@@ -12,7 +17,7 @@
        <div class="col-lg-12">
           <div class="card">
            <div class="card-body">
-            <form class="enquiry_page_report">
+            <form class="enquiry_page_report" @submit.prevent="getFormValues">
              <div class="row">
               <div class="col-sm-3 col-md-2 input-inside">
                <label class="form-label">Follow Up date</label>
@@ -44,7 +49,7 @@
     <label class="form-label"> Intersted Country</label>
    <!--  <select class="form-control i_country select2-show-search form-select" id="i_country" name="i_country[]" multiple data-placeholder="Select Intersted Country">
 </select> -->
- <select name="i_country[]" id="i_country" data-placeholder="Intersted Country" class="i_country select2-show-search form-select">
+ <select name="i_country" id="i_country" data-placeholder="Intersted Country" class="i_country select2-show-search form-select">
                 </select>
 </div>
 </div>
@@ -115,7 +120,7 @@
      <span class="spinner-border spinner-border-sm btn-sm" role="status" aria-hidden="true"></span>
      Loading...
   </button>
-  <button type="button" class="box-btn fil_gray reset_btn" style="
+  <button type="button" class="box-btn fil_gray reset_btn" @click="reset" style="
   margin-top: 25px;">Reset</button>
 </div>
 
@@ -128,39 +133,39 @@
 <br/>
 <div style="float:left; width: 44%;" class="hr1"><hr/></div>
           <div style="float:right; width: 43%;" class="hr2"><hr/></div>&nbsp; Or Search With <br><br>
-<div class="row">
+          <div class="row">
  <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
-           <form class="detail_search">
-            <div class="row input-inside">
-                <div class="col-sm-2 col-md-3 ">
+           <form class="detail_search" @submit.prevent="getFormValuesSimple">
+            <div class="row">
+                <div class="col-sm-2 col-md-3 input-inside">
                    <div class="form-group">
                       <label class="form-label">Name</label>
                       <input class="form-control name" id="name" name="uname" placeholder="Name" type="text">
                   </div>
               </div>
-              <div class="col-sm-2 col-md-3">
+              <div class="col-sm-2 col-md-3 input-inside">
                  <div class="form-group">
                     <label class="form-label">Email</label>
                     <input class="form-control email" id="email" name="email" placeholder="Email" type="text">
                  </div>
               </div>
-              <div class="col-sm-2 col-md-3">
+              <div class="col-sm-2 col-md-3 input-inside">
                  <div class="form-group">
                     <label class="form-label">Number</label>
                     <input class="form-control number" id="number" name="number" placeholder="Number" type="text">
                 </div>
              </div>
-             <div class="col-sm-3 col-md-3 form-btns">
+             <div class="col-sm-3 col-md-3">
                     <button type="submit" class="box-btn fill_primary sub_btn" style="
-                    margin-top: 26px;">Submit</button>
-                    <button class="btn btn-primary spiner_btn_detail"  type="button" disabled style="display: none;margin-top: 26px;">
+                    margin-top: 25px;">Submit</button>
+                    <button class="btn btn-primary spiner_btn"  type="button" disabled style="display: none;margin-top: 25px;">
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Loading...
                   </button>
-                  <button type="button" class="box-btn fil_gray reset_btn_detail" style="
-                  margin-top: 26px;">Reset</button>
+                  <button type="button" class="box-btn fil_gray reset_btn_detail"  @click="resetDetail"  style="
+                  margin-top: 25px;">Reset</button>
               </div>
            </div> 
           </form>  
@@ -675,21 +680,8 @@ referrerpolicy="no-referrer"
    }
 });
 
-  $(document).on('submit', '.enquiry_page_report',function(e){
-    e.preventDefault();
-    $('.detail_search')[0].reset();
-    get_enquiry_report_data();
- });
-
-   $(document).on('submit', '.detail_search',function(e){
-    e.preventDefault();
-    
-    $(".enquiry_type").val('').trigger('change');
-     $('.passport_date').val(null).trigger("change");
-    $('.enquiry_page_report')[0].reset();
-    get_detail_data();
-  });
-
+ 
+ 
 
 function get_detail_data(){
      $('.sub_btn').attr('disabled', 'disabled');
@@ -839,20 +831,8 @@ function get_detail_data(){
 
 });
 
-  $(document).on('click', '.reset_btn',function(e){
-    $('.enquiry_page_report')[0].reset();
-     $(".enquiry_type").val(null).trigger('change');
-    $('.language').val(null).trigger("change");
-    $('.i_country').val(null).trigger("change");
-    $('.reason_type').val(null).trigger("change");
-    get_enquiry_report_data();
-
- });
-
-  $(document).on('click', '.reset_btn_detail',function(e){
-    $('.detail_search')[0].reset();
-   get_detail_data(); 
-});
+ 
+ 
 
   $(document).on('click', '#view_pool_des',function(e){
    var record_id = $(this).val();
@@ -919,15 +899,28 @@ const app = createApp({
     },
     methods:
    {
-    
-      fetchData(page,formData) {
+      resetDetail()
+      {
+         $('.detail_search')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_finalize_detail_report');
+      },
+   reset()
+   {
+      $('.enquiry_page_report')[0].reset();
+      $(".enquiry_type").val(null).trigger('change');
+      $('.language').val(null).trigger("change");
+      $('.i_country').val(null).trigger("change");
+      $('.reason_type').val(null).trigger("change");
+      this.fetchData(this.page,$('.detail_search').serializeArray());
+   },
+      fetchData(page,formData,endpoint='generate_finalize_enquiry_report') {
           
                 const self = this;  // Preserve the Vue instance context
 
                 $.ajax({
-      url : base_url+'franchise/reports/generate_finalize_enquiry_report',
+      url : base_url+'franchise/reports/'+endpoint,
       type : "POST",
-      data : $('.detail_search').serializeArray(),
+      data : formData,
       success :function(data){
         
          self.dataFromServer = data.fetch_enquiry_array;
@@ -940,12 +933,17 @@ const app = createApp({
             },
             getFormValues()
       {
+         $('.detail_search')[0].reset();
          
-        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
+
+        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray() );
       },
       getFormValuesSimple()
       {
-         this.fetchData(this.currentPage);
+         $(".enquiry_type").val('').trigger('change');
+     $('.passport_date').val(null).trigger("change");
+    $('.enquiry_page_report')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_finalize_detail_report');
       }
    },
     

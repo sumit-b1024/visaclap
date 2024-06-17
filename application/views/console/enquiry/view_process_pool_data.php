@@ -2,7 +2,16 @@
  label.error{
   color: red;
 }
-</style>    
+</style> 
+<style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>   
+ 
+<script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
+
+<div id='firstApp' v-cloak>
 <h6 class="primary-title1 mb-0" style="    color: #575757;">Select Filter </h6><br>
 <div class="row row-sm">
  <div class="col-lg-12">
@@ -11,7 +20,7 @@
 
      <div class="card">
        <div class="card-body">
-         <form class="enquiry_page_report">
+         <form class="enquiry_page_report"  @submit.prevent="getFormValues">
            <div class="row">
              <div class="col-sm-3 col-md-2 input-inside mb-1">
                <label class="form-label">Follow Up Date</label>
@@ -102,7 +111,7 @@
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
         Loading...
       </button>
-      <button type="button" class="box-btn fil_grey reset_btn" style="
+      <button type="button" class="box-btn fil_grey reset_btn"  @click="reset"  style="
       margin-top: 25px;">Reset</button>
     </div>
 
@@ -117,7 +126,7 @@
  <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
-           <form class="detail_search">
+           <form class="detail_search" @submit.prevent="getFormValuesSimple">
             <div class="row input-inside">
                 <div class="col-sm-2 col-md-3 ">
                    <div class="form-group">
@@ -144,7 +153,7 @@
                       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                       Loading...
                   </button>
-                  <button type="button" class="box-btn fil_grey reset_btn_detail" style="
+                  <button type="button" class="box-btn fil_grey reset_btn_detail"  @click="resetDetail"  style="
                   margin-top: 25px;">Reset</button>
               </div>
            </div> 
@@ -168,8 +177,77 @@
 </div>
 </div>
 <div class="card-body">
+              
   <div class="table-responsive" id="process_pool_data">
-
+  <table class="table table-bordered text-nowrap border-bottom" id="responsive_process_pool">
+  <thead>
+    <tr>
+     <th width="wd-15p border-bottom-0" style="width:10%">
+        <label class="custom-control custom-checkbox-md">
+          <input type="checkbox" class="custom-control-input" id="process_check_box_th" name="example-checkbox1" >
+          <span class="custom-control-label"></span>
+        </label>
+      </th>
+      <th width="wd-15p border-bottom-0" style="width:50%"> Name </th>
+      <th width="wd-15p border-bottom-0" style="width:10%"> Mobile </th>
+      <!--<th width="wd-15p border-bottom-0"> Follow Up Date </th>-->
+      
+      <th width="wd-15p border-bottom-0" style="width:20%"> Action</th>
+    </tr>
+  </thead>
+  <tbody>
+   
+        <tr v-for="view in dataFromServer" :key="view.id">
+          <td>
+            <label class="custom-control custom-checkbox-md">
+              <input type="checkbox" class="custom-control-input process_check_box_td" :value="view.id">
+              <span class="custom-control-label"></span>
+            </label>
+          </td>
+          <td>
+            <div class="cell_content">
+              <p>
+                <img v-if="view.enquiry_type_icon_img" :src="getBaseUrl() + view.enquiry_type_icon_img" alt="img" class="avatar-sm profile-user brround cover-image">&nbsp;&nbsp;
+                <img v-if="'<?= $this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE_STAFF?>' && view.company" src="<?php echo base_url('assets/img/bo.svg'); ?>" >
+                {{ view.name }}
+                <span class="d-inine orange-text">({{ getDaysDifference(view.created_at) }} Days)</span>
+                <span v-if="'<?= $this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>' && view.staff_name" class="d-inine orange-text">({{ view.staff_name }})</span>
+                <br/>
+                <b v-if="view.interview_date && view.biomatric_date" class="fonts11" style="color:#6c5ffc">
+                  (Biometric Date: {{ formatDate(view.biomatric_date) }}) (Interview Date: {{ formatDate(view.interview_date) }})
+                </b>
+              </p>
+              <p class="fonts11">
+                <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+                <span v-if="view.intersted_country">
+                  ({{  (view.intersted_country_name) }})
+                </span>
+                <span v-if="view.visa_id">
+                  ({{  (view.visa_name) }})
+                </span>
+              </p>
+              <div class="type-actions">
+                <button  href="javascript:void(0)" class="change_pool_status" :pool_record_id="view.id" value="2">Finalize Pool</button>
+                <button  href="javascript:void(0)" class="change_pool_status" :pool_record_id="view.id" value="3">Drop Pool</button>  
+              </div>
+            </div>
+          </td>
+          <td>{{ view.mobile_no }}</td>
+          <td>
+            <div class="tbl-action-wrap">
+              <a v-if="'<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>'" class="single-action view get_follow_up" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View All Follow Up">
+                <img src="<?php echo base_url('assets/img/eye.svg'); ?>">
+              </a>
+              <button type="button" class="single-action whatsapp open_whatsup_modal" :value="view.id"><img src="<?php echo base_url('assets/img/whatsapp.svg'); ?>"></button>
+              <a class="box-btn bg-transparent add_interview_click" data-bs-target="#add_interview" data-bs-toggle="modal" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up"><img src="<?php echo base_url('assets/img/add.svg'); ?>">Add deadline</a>
+              <a v-if="'<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>' && view.passing === 'yes' && view.mobile_no" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <a v-if="'<?=$this->session->userdata('user_role')?>' === '<?=User_role::FRANCHISE?>' && view.emailpassing === 'yes' && view.email" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.email" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <button v-if="view.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View Document"><i class="fa fa-file"></i></button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+  </table>
   </div>
 </div>
 </div>
@@ -472,6 +550,7 @@
       </div>
    </div>
 
+</div>
 </div>
 </div>
 
@@ -861,19 +940,8 @@ $(document).on('submit','.followup_form',function(e){
   });
   // });
 
-  $(document).on('submit', '.enquiry_page_report',function(e){
-    e.preventDefault();
-    $('.detail_search')[0].reset();
-    get_enquiry_report_data();
-  });
-  $(document).on('submit', '.detail_search',function(e){
-    e.preventDefault();
-    $(".enquiry_type").val('').trigger('change');
-     $('.passport_date').val(null).trigger("change");
-    $('.enquiry_page_report')[0].reset();
-    get_detail_data();
-  });
-
+ 
+ 
 
   function get_detail_data(){
 
@@ -1016,7 +1084,7 @@ if ($(".followup").length > 0) {
     });
     });
 
-    get_enquiry_report_data();
+     
  //  $(document).on('click', '.change_pool_status', function () {
 
  //    $('#pool_status_modal').modal('show');
@@ -1071,22 +1139,7 @@ if ($(".followup").length > 0) {
 
  // });
 
- $(document).on('click', '.reset_btn',function(e){
-   $('.enquiry_page_report')[0].reset();
-   $('.language').val(null).trigger("change");
-   $('.s_description').val(null).trigger("change");
-   $(".enquiry_type").val(null).trigger('change');
-   $('.i_country').val(null).trigger("change");
-   $('.reason_type').val(null).trigger("change");
-   $('.name').val(null).trigger("change");
-   $('.email').val(null).trigger("change");
-   $('.number').val(null).trigger("change");
-   get_enquiry_report_data();
- });
- $(document).on('click', '.reset_btn_detail',function(e){
-    $('.detail_search')[0].reset();
-   get_detail_data(); 
-});
+ 
 
  $(document).on('click', '#view_pool_des',function(e){
    var record_id = $(this).val();
@@ -1108,3 +1161,134 @@ if ($(".followup").length > 0) {
 });
 
 </script>
+
+
+
+
+<script >
+ 
+    const { createApp, ref, watch ,nextTick} = Vue;
+
+document.addEventListener('DOMContentLoaded', () => {
+ 
+   const { createApp } = Vue;
+   const dataFromServer = ref([])
+
+const app = createApp({
+   
+    data() {
+      
+        return {
+         currentPage: 1,
+         dataTable:null,
+         dataFromServer,
+                totalPages: 1,
+            message: ''
+        };
+    },
+    watch: {
+      dataFromServer(newValue, oldValue) {
+        
+         if(this.dataTable)
+            {
+
+                  console.log( this.dataTable);
+                  this.dataTable.destroy();
+            }
+         nextTick(() => {
+           
+            console.log(this.dataFromServer);
+ 
+           this.dataTable=  $('#responsive_process_pool').DataTable({
+        order: [[0, 'desc']],
+       });
+                 
+                 
+                });
+
+         
+        }
+    },
+    methods:
+   {
+      resetDetail()
+      {
+         $('.detail_search')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_process_detail_report');
+      },
+   reset()
+   {
+      $('.enquiry_page_report')[0].reset();
+   $('.language').val(null).trigger("change");
+   $('.s_description').val(null).trigger("change");
+   $(".enquiry_type").val(null).trigger('change');
+   $('.i_country').val(null).trigger("change");
+   $('.reason_type').val(null).trigger("change");
+   $('.name').val(null).trigger("change");
+   $('.email').val(null).trigger("change");
+   $('.number').val(null).trigger("change"); 
+      this.fetchData(this.page,$('.enquiry_page_report').serializeArray());
+   },
+    
+    
+      formatDate(date) {
+          return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        },
+      getBaseUrl() {
+          return '<?php echo base_url(); ?>';
+        },
+        getDaysDifference(date) {
+          const startTimeStamp = new Date(date).getTime();
+          const endTimeStamp = new Date().getTime();
+          const timeDiff = Math.abs(endTimeStamp - startTimeStamp);
+          return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        },
+      fetchData(page,formData,endpoint='generate_process_enquiry_report') {
+          
+                const self = this;  // Preserve the Vue instance context
+
+                $.ajax({
+      url : base_url+'franchise/reports/'+endpoint,
+      type : "POST",
+      data : $('.detail_search').serializeArray(),
+      success :function(data){
+         
+         self.dataFromServer = data.fetch_process_enquiry_data;
+         self.currentPage = data.current_page;
+         self.totalPages = data.total_pages;
+         
+         
+    
+      }});
+            },
+      getFormValues()
+      {
+        $('.detail_search')[0].reset();
+        this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray() );
+      },
+      getFormValuesSimple()
+      {
+         $(".enquiry_type").val('').trigger('change');
+         $('.passport_date').val(null).trigger("change");
+         $('.enquiry_page_report')[0].reset();
+         this.fetchData(this.currentPage , $(".detail_search").serializeArray(),'generate_process_detail_report');
+      }
+   },
+    
+    mounted() {
+      const self = this; 
+      this.fetchData(this.currentPage,$('.enquiry_page_report').serializeArray());
+
+    },
+    beforeDestroy() {
+    // Destroy the DataTable instance to prevent memory leaks
+    if (this.dataTable) {
+      this.dataTable.destroy();
+    }
+  }
+   });
+
+app.mount('#firstApp');
+});
+</script>
+

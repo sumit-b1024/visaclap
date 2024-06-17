@@ -318,7 +318,7 @@ class Setting_model extends MY_Model
     {
         
 
-        $apiurl =  API_URL."Getvisaservicefees";
+          $apiurl =  API_URL."Getvisaservicefees";
         $ch = curl_init();
         //echo $visaid."---".$intersted_country; exit;
         $params = array('visaid' => $visaid,'intersted_country' => $intersted_country);
@@ -333,7 +333,7 @@ class Setting_model extends MY_Model
         
         $visaservice  = json_decode($vdata);
         
-        /* return country name */
+   
         return $visaservice;
     }
 
@@ -1479,15 +1479,16 @@ function fetch_user_email_credencials($id){
 return array();
 }
 
-function fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country=array(),$enquiry_from,$enquiry_to,$status,$city=array(),$enquiry_type=0,$reason_type=0){
 
-    
+
+function fetch_settings_report_data($follow_up_date,$language,$s_description,$staff_id,$p_valid_from,$p_valid_to,$i_country=0,$enquiry_from,$enquiry_to,$status,$enquiry_type=0,$reason_type=0){
+  
 
     $this->db->select('saf.id,saf.name,saf.email,saf.visa_name,saf.intersted_country_name,saf.company,saf.mobile_no,saf.enquiry_type,saf.visa_id,saf.city,saf.language,saf.s_description,saf.description,saf.supplier_id,saf.follow_up_date,saf.biomatric_date,saf.interview_date,saf.intersted_country,saf.created_at,saf.pool_status as current_pull, saf.passport_no,saf.p_valid_from,saf.p_valid_to,pm.name as enquiry_type_name,pm.meta_id as enquiry_type_id,u.first_name as staff_name,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.mobile_no) THEN "yes" ELSE "no" END as passing,CASE WHEN EXISTS (select * from cs_visa_application B where B.passing = saf.email) THEN "yes" ELSE "no" END as emailpassing,count(ed.sup_id) as dtotal');
     $this->db->from(TBL_SUPPLIER_ADD_FRANCHISE . ' saf');
     $this->db->join(TBL_USERS . ' u','saf.enquiry_staff_id = u.user_id','left');
     $this->db->join(TBL_PACKAGE_META . ' pm','saf.enquiry_type=pm.meta_id','left');
-    $this->db->join(TBL_ENQUIRY_DOCUMENT . ' ed','saf.id=ed.sup_id','left');
+    $this->db->join(TBL_ENQUIRY_DOCUMENT . ' ed','saf.id=ed.sup_id','LEFT');
 
     //$this->db->join("($subquery)  t2","t2.sup_id = saf.id");
     
@@ -1515,7 +1516,7 @@ function fetch_settings_report_data($follow_up_date,$language,$s_description,$st
     }
 
     if($enquiry_from != "" && $enquiry_to != ""){
-        $this->db->where('DATE(saf.created_at) BETWEEN "'. date('Y-m-d', strtotime($enquiry_from)). '" and "'. date('Y-m-d', strtotime($enquiry_to)).'"');
+        $this->db->where('DATE(created_at) BETWEEN "'. date('Y-m-d', strtotime($enquiry_from)). '" and "'. date('Y-m-d', strtotime($enquiry_to)).'"');
     }
     if(isset($enquiry_from) && $enquiry_from != "" && $enquiry_to == ""){
         $this->db->where('DATE(created_at)',date('Y-m-d',strtotime($enquiry_from)));
@@ -1523,29 +1524,17 @@ function fetch_settings_report_data($follow_up_date,$language,$s_description,$st
     if(isset($enquiry_to) && $enquiry_to != "" && $enquiry_from == ""){
         $this->db->where('DATE(created_at)',date('Y-m-d',strtotime($enquiry_to)));
     }
-
+  
     if(isset($enquiry_type) && $enquiry_type > 0){
         $this->db->where('enquiry_type',$enquiry_type);
     }
 
 
-    if(is_array($i_country)){
-     $this->db->group_start();
-     foreach($i_country as $value)
-     {
-        $this->db->where("find_in_set($value, saf.intersted_country) !=",0);
-     }
-     $this->db->group_end();
+
+    if(isset($i_country) && $i_country > 0){
+        $this->db->where('saf.intersted_country',$i_country);
     }
 
-if(!empty($city)){
- $this->db->group_start();
- foreach($city as $value)
- {
-    $this->db->where("find_in_set($value, saf.city) !=",0);
-}
-$this->db->group_end();
-}
 
 if(isset($p_valid_from) && $p_valid_from != ""){
     $this->db->where('p_valid_from',date('Y-m-d',strtotime($p_valid_from)));
@@ -1578,7 +1567,9 @@ if($query->num_rows() > 0){
 }
 return array();
 
-}
+} 
+
+
 
 
 

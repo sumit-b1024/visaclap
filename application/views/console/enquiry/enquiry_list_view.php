@@ -28,6 +28,14 @@ exit;*/
 $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'));
 
  ?>
+   <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+<script src="https://unpkg.com/vue@3.4.27/dist/vue.global.js"></script>
+ 
+<div id='firstApp' v-cloak>
 <input type="hidden" name="userwallet" id="userwallet" value="<?= ($wallet->balance) ? $wallet->balance :0; ?>">
 <!-- follow uo form -->
 <div class="modal fade" id="enquiry_model">
@@ -283,7 +291,7 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
             <form class="pool_page_report">
             <div class="input-inside1">
               <label for="" class="d-block">Select Enquiry Type</label>
-              <select name="enquiry_type" class="form-select enquiry_type">
+              <select name="enquiry_type" class="form-select enquiry_type" @change="handleSelectChange($event)">
                 <option value="">Select Enquiry</option>
                 <?php foreach ($get_enquiry_type as $key => $value) { ?>
                     <option value="<?= $value->meta_id ?>" <?= isset($enquiry) && !empty($enquiry->enquiry_type) && $enquiry->enquiry_type == $value->meta_id ? "selected" : set_value('enquiry_type'); ?>><?= $value->name ?></option>
@@ -346,19 +354,396 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
       <div class="tab-content">
         <div class="tab-pane fade show active" id="proce-pool">
             <center><div class="loader"></div></center>
-            <div class="table-responsive" id="process_pool_div"></div>
+            <div class="table-responsive" id="process_pool_div">
+
+            <button type="button" class="btn btn-danger btn-sm process_pool_send_mail" style="display:none;"><i class="fa fa-send"></i> Send Mail</button>
+<br>
+<table class="table table-bordered text-nowrap border-bottom" id="responsive_process_pool">
+  <thead>
+    <tr>
+      <th width="wd-15p border-bottom-0" >
+        <label class="custom-control custom-checkbox-md">
+          <input type="checkbox" class="custom-control-input" id="process_check_box_th" name="example-checkbox1" >
+          <span class="custom-control-label"></span>
+        </label>
+      </th>
+      <th width="wd-15p border-bottom-0" > Name </th>
+      <th width="wd-15p border-bottom-0" > Mobile </th>
+      <th width="wd-15p border-bottom-0" > Created </th>
+      
+      <th width="wd-15p border-bottom-0" > Action</th>
+    </tr>
+  </thead>
+  <tbody>
+        <tr v-for="view in dataFromServer" :key="view.id">
+          <td>
+            <label class="custom-control custom-checkbox-md">
+              <input type="checkbox" class="custom-control-input process_check_box_td" :value="view.id">
+              <span class="custom-control-label"></span>
+            </label>
+          </td>
+          <td>
+            <div class="cell_content">
+              <p>
+                <img v-if="view.enquiry_type_icon_img" :src="getBaseUrl() + view.enquiry_type_icon_img" alt="img" class="avatar-sm profile-user brround cover-image">&nbsp;&nbsp;
+                <img v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE_STAFF?>' && view.company" src="<?php echo base_url('assets/img/bo.svg'); ?>" >
+                {{ view.name }}
+                <span class="d-inine orange-text">({{ getDaysDifference(view.created_at) }} Days)</span>
+                <span v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>' && view.staff_name" class="d-inine orange-text">({{ view.staff_name }})</span>
+                <br/>
+                <b v-if="view.interview_date && view.biomatric_date" class="fonts11" style="color:#6c5ffc">
+                  (Biometric Date: {{ formatDate(view.biomatric_date) }}) (Interview Date: {{ formatDate(view.interview_date) }})
+                </b>
+              </p>
+              <p class="fonts11">
+                <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+                <span v-if="view.intersted_country">
+                  ({{  (view.intersted_country_name) }})
+                </span>
+                <span v-if="view.visa_id">
+                  ({{  (view.visa_name) }})
+                </span>
+              </p>
+              <div class="type-actions">
+                <button href="javascript:void(0)"  class="change_pool_status" :pool_record_id="view.id" value="2">Finalize Pool</button>
+                <button href="javascript:void(0)" class="change_pool_status" :pool_record_id="view.id" value="3">Drop Pool</button>  
+              </div>
+            </div>
+          </td>
+          <td>{{ view.mobile_no }}</td>
+          <td>{{ formatDate(view.created_at) }}</td>
+          <td>
+            <div class="tbl-action-wrap">
+              <a v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>'" class="single-action view get_follow_up" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View All Follow Up">
+                <img src="<?php echo base_url('assets/img/eye.svg'); ?>">
+              </a>
+              <button type="button" class="single-action whatsapp open_whatsup_modal" :value="view.id"><img src="<?php echo base_url('assets/img/whatsapp.svg'); ?>"></button>
+              <a class="box-btn bg-transparent add_interview_click" data-bs-target="#add_interview" data-bs-toggle="modal" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up"><img src="<?php echo base_url('assets/img/add.svg'); ?>">Add deadline</a>
+              <a v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>' && view.passing === 'yes' && view.mobile_no" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <a v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>' && view.emailpassing === 'yes' && view.email" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.email" data-toggle="tooltip" data-placement="top" title="View Visa"><i class="fa fa-cc-visa"></i></a>
+              <button v-if="view.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View Document"><i class="fa fa-file"></i></button>
+              <button type="button" class="box-btn bg-transparent send_enquiry_link" :data-visaid="view.visa_id" :data-phone="view.mobile_no" :data-dest="view.intersted_country">send form</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+</table>
+
+            </div>
         </div>
         <div class="tab-pane fade show" id="today-follow">
-          <center><div class="t_loader"></div></center>
-            <div class="table-responsive" id="today_follow_up_div"></div>
+        
+            <div class="table-responsive" id="today_follow_up_div">
+
+            <table class="table table-bordered text-nowrap border-bottom" id="responsive_datatable_today">
+    <thead>
+      <tr>
+        <th style="width:10%;">
+          <label class="custom-control custom-checkbox-md">
+            <input type="checkbox" class="custom-control-input" id="table_one" name="example-checkbox2" value="option1" />
+            <span class="custom-control-label"></span>
+          </label>
+        </th>
+        <th style="width:60%;">Name</th>
+        <th style="width:10%;">Mobile</th>
+        <th style="width:10%;">Created</th>
+        <th style="width:10%;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="view in dataFromServerTodayFollowup" :key="view.id">
+        <td>
+          <label class="custom-control custom-checkbox-md">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="tbl_one_td"
+              name="process_check_box_td"
+              :value="view.id"
+            />
+            <span class="custom-control-label"></span>
+          </label>
+        </td>
+        <td>
+          <div class="cell_content">
+            <p>
+              <img
+                v-if="view.enquiry_type_icon_img"
+                :src="`${base_url}${view.enquiry_type_icon_img}`"
+                alt="img"
+                class="avatar-sm profile-user brround cover-image"
+              />
+              {{ view.name }}
+              <span class="d-inline orange-text">({{ getDaysDifference(view.created_at) }} Days)</span>
+              <b v-if="view.staff_name" style="color:red">({{ view.staff_name }})</b>
+            </p>
+            <p class="fonts11">
+              <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+              <span v-if="view.intersted_country">({{ view.intersted_country_name }})</span>
+              <span v-if="view.visa_id">({{ view.visa_name }})</span>
+            </p>
+            <div class="type-actions">
+              <button
+                v-if="view.enquiry_type_id === '32'"
+                type="button"
+                class="new_change_process_pool_status"
+                :data-service="service"
+                :pool_record_id="view.id"
+                value="1"
+              >
+                Process Pool
+              </button>
+              <button
+                v-else
+                type="button"
+                class="change_process_pool_status"
+                :pool_record_id="view.id"
+                value="1"
+              >
+                Process Pool
+              </button>
+              <button type="button" class="change_pool_status" :pool_record_id="view.id" value="3">
+                Drop Pool
+              </button>
+            </div>
+          </div>
+        </td>
+        <td>{{ view.mobile_no }}</td>
+        <td>{{ new Date(view.created_at).toLocaleDateString() }}</td>
+        <td width="70%">
+          <div class="tbl-action-wrap">
+            <a
+              v-if="'<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>'"
+              data-original-title="Edit Enquiry"
+              data-placement="top"
+              data-toggle="tooltip" 
+              data-control="enquiry"
+              href="classes/edit/1"
+              class="mr-2 open_my_form_form edit_btn"
+              :data-id="view.id"
+              id="class_edit_1"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Edit"
+            >
+              <img src="<?php echo base_url('assets/img/edit-2.svg'); ?>" />
+            </a>
+            <a
+              class="box-btn bg-transparent enquiry_model_click"
+              data-bs-target="#enquiry_model"
+              data-bs-toggle="modal"
+              href="javascript:void(0)"
+              :value="view.id"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="Add Follow Up"
+            >
+              Follow Up
+            </a>
+            <a class="get_follow_up" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View All Follow Up">
+              <img src="<?php echo base_url('assets/img/eye.svg'); ?>" />
+            </a>
+            <button type="button" class="single-action whatsapp open_whatsup_modal" :value="view.id">
+              <img src="<?php echo base_url('assets/img/whatsapp.svg'); ?>" />
+            </button>
+            <button
+              v-if="view.dtotal > 0"
+              class="btn btn-success btn-sm get_enquirey_document"
+              href="javascript:void(0)"
+              :value="view.id"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="View Document"
+            >
+              <i class="fa fa-file"></i>
+            </button>
+            <a
+              v-if="('<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>' || '<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE_STAFF?>') && view.passing === 'yes' && view.mobile_no !== ''"
+              class="btn btn-success btn-sm get_visa_data"
+              href="javascript:void(0)"
+              :value="view.mobile_no"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="View Visa"
+            >
+              <i class="fa fa-cc-visa"></i>
+            </a>
+            <a
+              v-if="('<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE?>' || '<?=$this->session->userdata('user_role')?>' == '<?=User_role::FRANCHISE_STAFF?>') && view.emailpassing === 'yes' && view.email !== ''"
+              class="btn btn-success btn-sm get_visa_data"
+              href="javascript:void(0)"
+              :value="view.email"
+              data-toggle="tooltip"
+              data-placement="top"
+              title="View Visa"
+            >
+              <i class="fa fa-cc-visa"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+            
+            </div>
         </div>
         <div class="tab-pane fade show" id="yesterday-follow">
-            <center><div class="y_loader"></div></center>
-             <div class="table-responsive" id="yesterday_follow_up_div"></div>
+           
+             <div class="table-responsive" id="yesterday_follow_up_div">
+
+             <table class="table table-bordered text-nowrap border-bottom" id="responsive_datatable_yesterday">
+    <thead>
+      <tr>
+        <th width="wd-15p border-bottom-0" style="width:5%;">
+          <label class="custom-control custom-checkbox-md">
+            <input type="checkbox" class="custom-control-input" id="yesterday_check_box_th" name="process_check_box_td" value="option1">
+            <span class="custom-control-label"></span>
+          </label>
+        </th>
+        <th width="wd-15p border-bottom-0" style="width:40%;">Name</th>
+        <th width="wd-15p border-bottom-0" style="width:5%;">Mobile</th>
+        <th width="wd-15p border-bottom-0" style="width:5%;">Created</th>
+        <th width="wd-15p border-bottom-0" style="width:30%;">Description</th>
+        <th width="wd-15p border-bottom-0" style="width:20%;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="view in dataFromServerYesterdayFollowup" :key="view.id">
+        <td width="5%">
+          <label class="custom-control custom-checkbox-md">
+            <input type="checkbox" class="custom-control-input" name="yesterday_check_box_td" :value="view.id" id="yesterday_tbl_td">
+            <span class="custom-control-label"></span>
+          </label>
+        </td>
+        <td width="40%">
+          <div class="cell_content">
+            <p>
+              <img v-if="view.enquiry_type_icon_img" :src="`${base_url}${view.enquiry_type_icon_img}`" alt="img" class="avatar-sm profile-user brround cover-image" />
+              {{ view.name }}
+              <span class="d-inline orange-text">({{ getDaysDifference(view.created_at) }} Days)</span>
+              <b v-if="userRole === 'FRANCHISE' && view.staff_name" style="color:red">({{ view.staff_name }})</b>
+            </p>
+            <p class="fonts11">
+              <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+              <span v-if="view.intersted_country_name">({{ view.intersted_country_name }})</span>
+              <span v-if="view.visa_name">({{ view.visa_name }})</span>
+            </p>
+            <div class="type-actions">
+              <button type="button" class="new_change_process_pool_status" :data-service="getServiceCharge(view.visa_id, view.intersted_country)" :pool_record_id="view.id" value="1">Process Pool</button>
+              <button type="button" class="change_pool_status" :pool_record_id="view.id" value="3">Drop Pool</button>
+            </div>
+          </div>
+        </td>
+        <td width="5%">{{ view.mobile_no }}</td>
+        <td width="5%">{{ new Date(view.created_at).toLocaleDateString() }}</td>
+        <td width="30%" style="white-space: normal;">{{ view.description }}</td>
+        <td width="20%">
+          <div class="tbl-action-wrap">
+            <a v-if="userRole === 'FRANCHISE'" data-original-title="Edit Course" data-placement="top" data-toggle="tooltip" data-control="enquiry" href="classes/edit/1" class="single-action open_my_form_form edit_btn" :data-id="view.id" id="class_edit_1" data-toggle="tooltip" data-placement="top" title="Edit">
+              <img src="<?php echo base_url('assets/img/edit-2.svg'); ?>" />
+            </a>
+            <a class="box-btn bg-transparent enquiry_model_click" data-bs-target="#enquiry_model" data-bs-toggle="modal" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up">Follow Up</a>
+            <a class="single-action view get_follow_up" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View All Follow Up">
+              <img src="<?php echo base_url('assets/img/eye.svg'); ?>" />
+            </a>
+            <button type="button" class="single-action whatsapp open_whatsup_modal" :value="view.id">
+              <img src="<?php echo base_url('assets/img/whatsapp.svg'); ?>" />
+            </button>
+            <button v-if="view.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View Document">
+              <i class="fa fa-file"></i>
+            </button>
+            <a v-if="(userRole === 'FRANCHISE' || userRole === 'FRANCHISE_STAFF') && view.passing === 'yes' && view.mobile_no !== ''" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa">
+              <i class="fa fa-cc-visa"></i>
+            </a>
+            <a v-if="(userRole === 'FRANCHISE' || userRole === 'FRANCHISE_STAFF') && view.emailpassing === 'yes' && view.email !== ''" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.email" data-toggle="tooltip" data-placement="top" title="View Visa">
+              <i class="fa fa-cc-visa"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+             </div>
         </div>
         <div class="tab-pane fade show" id="missed-follow">
-          <center><div class="m_loader"></div></center>
-             <div class="table-responsive" id="missed_follow_up_div"></div>
+        
+             <div class="table-responsive" id="missed_follow_up_div">
+
+             <button type="button" class="btn btn-danger btn-sm missed_pool_send_mail" style="display:none;" ><i class="fa fa-send"></i> Send Mail</button>
+<br>
+<table class="table table-bordered text-nowrap border-bottom" id="responsive_datatable_missed">
+ <thead>
+    <tr>
+       <th style="width:10%;">
+          <label class="custom-control custom-checkbox-md">
+             <input type="checkbox" class="custom-control-input" id="missed_check_box_th" name="example-checkbox1" value="option1" >
+          </label>
+       </th>
+       <th style="width:50%;"> Name</th>
+       <th style="width:10%;"> Mobile </th>
+       <th style="width:10%;"> Created </th>
+       <th style="width:12%;"> Follow Up Date </th>
+       
+       <th style="width:8%;"> Action</th>
+    </tr>
+ </thead>
+ <tbody>
+        <tr v-for="view in dataFromServerMissedFollowup" :key="view.id">
+          <td>
+            <label class="custom-control custom-checkbox-md">
+              <input type="checkbox" class="custom-control-input" id="missed_check_box_td" name="process_check_box_td" :value="view.id">
+              <span class="custom-control-label"></span>
+            </label>
+          </td>
+          <td width="50%">
+            <div class="cell_content">
+              <p>
+                <img v-if="view.enquiry_type_icon_img" :src="getBaseUrl() + view.enquiry_type_icon_img" alt="img" class="avatar-sm profile-user brround cover-image">&nbsp;&nbsp;
+                {{ view.name }} <span class="d-inline orange-text">({{ getDaysDifference(view.created_at) }} Days)</span>
+                <b v-if="<?=$this->session->userdata('user_role')?> == <?=User_role::FRANCHISE?> && view.staff_name" style="color:red">({{ view.staff_name }})</b>
+              </p>
+              <p class="fonts11">
+                <span v-if="view.enquiry_type_name">({{ view.enquiry_type_name }})</span>
+                <span v-if="view.intersted_country">({{ view.intersted_country_name }})</span>
+                <span v-if="view.visa_id">({{ view.visa_name }})</span>
+              </p>
+              <div class="type-actions">
+                <button v-if="view.enquiry_type_id == '32'" type="button" class="new_change_process_pool_status"   :visa_id="view.visa_id" :interested_country="view.intersted_country"  :pool_record_id="view.id" value="1">Process Pool</button>
+                <button v-else type="button" class="change_process_pool_status" :pool_record_id="view.id" value="1">Process Pool</button>
+                <button type="button" class="change_pool_status" :pool_record_id="view.id" value="3">Drop Pool</button>
+              </div>
+            </div>
+          </td>
+          <td>{{ view.mobile_no }}</td>
+          <td width="5%">{{ formatDate(view.created_at) }}</td>
+          <td>{{ view.follow_up_date != '0000-00-00' ? formatDate(view.follow_up_date) : '' }}</td>
+          <td width="70%">
+            <div class="tbl-action-wrap">
+              <a v-if="<?=$this->session->userdata('user_role')?> === <?=User_role::FRANCHISE?>" data-original-title="Edit Course" data-placement="top" data-toggle="tooltip" data-control="enquiry" href="classes/edit/1" class="single-action edit open_my_form_form edit_btn" :data-id="view.id" id="class_edit_1" data-toggle="tooltip" data-placement="top" title="Edit">
+                <img :src="getBaseUrl() + 'assets/img/edit-2.svg'">
+              </a>
+              <a class="box-btn bg-transparent enquiry_model_click" data-bs-target="#enquiry_model" data-bs-toggle="modal" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="Add Follow Up">Follow Up</a>
+              <a class="single-action view get_follow_up" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View All Follow Up">
+                <img :src="getBaseUrl()  + 'assets/img/eye.svg'">
+              </a>
+              <button type="button" class="single-action whatsapp open_whatsup_modal" :value="view.id"><img :src="getBaseUrl()  + 'assets/img/whatsapp.svg'"></button>
+              <a v-if="(<?=$this->session->userdata('user_role')?> === <?=User_role::FRANCHISE?> || <?=$this->session->userdata('user_role')?> === <?=User_role::FRANCHISE_STAFF?>) && view.passing === 'yes' && view.mobile_no" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.mobile_no" data-toggle="tooltip" data-placement="top" title="View Visa">
+                <i class="fa fa-cc-visa"></i>
+              </a>
+              <a v-if="(<?=$this->session->userdata('user_role')?> === <?=User_role::FRANCHISE?> || <?=$this->session->userdata('user_role')?> === <?=User_role::FRANCHISE_STAFF?>) && view.emailpassing === 'yes' && view.email" class="btn btn-success btn-sm get_visa_data" href="javascript:void(0)" :value="view.email" data-toggle="tooltip" data-placement="top" title="View Visa">
+                <i class="fa fa-cc-visa"></i>
+              </a>
+              <button v-if="view.dtotal > 0" class="btn btn-success btn-sm get_enquirey_document" href="javascript:void(0)" :value="view.id" data-toggle="tooltip" data-placement="top" title="View Document">
+                <i class="fa fa-file"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+
+</table>
+
+             </div>
         </div>
       </div>
 </div>
@@ -452,6 +837,7 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
 </div>
 </div>
 </div>
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.repeater/1.2.1/jquery.repeater.min.js"></script>
 <script>
 
@@ -473,19 +859,15 @@ $wallet =  $this->setting_model->get_wallet($this->session->userdata('user_id'))
 
        var shod =  panelshow.replace('#', '');
       if(shod == 'today-follow'){
-         $('#today-follow').html();
-         get_all_today_follow_up_data();
+      //   $('#today-follow').html();
+        // get_all_today_follow_up_data();
       }else if(shod == 'yesterday-follow'){
-         $('#yesterday-follow').html();
-         get_all_yesterday_follow_up_data();
+      //   $('#yesterday-follow').html();
+      //   get_all_yesterday_follow_up_data();
       }else if(shod == 'missed-follow'){
-         $('#missed-follow').html();
-         get_all_missed_follow_up_data();
-      }else if(shod == 'proce-pool'){
-         $('#proce-pool').html();
-         get_process_pool_data();
-      }
-
+       //  $('#missed-follow').html();
+        // get_all_missed_follow_up_data();
+      } 
    });
 
   
@@ -676,7 +1058,7 @@ function get_all_missed_follow_up_data(){
 }
 
 $(document).ready(function() {
- get_process_pool_data();
+  
  //get_all_today_follow_up_data();
  //get_all_yesterday_follow_up_data();
  //get_all_missed_follow_up_data();
@@ -720,10 +1102,10 @@ $(document).ready(function() {
 
  $(document).on('change','.enquiry_type, .staff_id',function(){
 
-   get_process_pool_data();
-   get_all_today_follow_up_data();
-   get_all_yesterday_follow_up_data();
-   get_all_missed_follow_up_data();
+  // get_process_pool_data();
+   //get_all_today_follow_up_data();
+   //get_all_yesterday_follow_up_data();
+   //get_all_missed_follow_up_data();
 });
 
  $(document).on('click', '.reset_btn',function(e){
@@ -1050,7 +1432,7 @@ success : function(data){
 
 $(".select2").select2({ width: '100%' }); 
 
-$('#responsive_process_pool').DataTable();
+ 
 $('#header_box').change(function(){
    if($(this).prop('checked')){
       $('#responsive-datatable tbody tr td input[type="checkbox"]').each(function(){
@@ -1382,14 +1764,45 @@ $(document).on('click', '.change_process_pool_status', function () {
  });
 });
 
-$(document).on('click', '.new_change_process_pool_status', function (e) {
-
+$(document).on('click', '.new_change_process_pool_status', async function (e) {
+ 
    $('.pool_description').val('');
    var cpermission = '<?php echo $company_permission->company_permission ?>';
 
    var btn_val = $(this).val();
    var pool_record_id = $(this).attr('pool_record_id');
-   var service = $(this).attr('data-service');
+ 
+
+
+
+   const params = new URLSearchParams({ visaid:$(this).attr("visa_id"), interested_country:$(this).attr("interested_country") });
+
+   const apiUrl ='<?php echo base_url(); ?>'+"franchise/enquiry/get_visa_service_fees";
+ 
+const response =  await  fetch(apiUrl, {
+    method: 'POST',
+    headers:{                'Content-Type': 'application/x-www-form-urlencoded',
+'x-DomainKey':'<?=USER_API_ACCESS?>'},
+    body:params
+});
+
+if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const visaService = await response.json();
+ console.log("response is ",visaService);
+ 
+const serviceCharge = visaService.visaservice.service_charge;
+
+// Split the service_charge string by '-' and get the first element
+var service = serviceCharge.split('-')[0];
+
+ 
+
+
+
+   
    if(service != "" && service != 0){
       service = service;
    }else{
@@ -1401,7 +1814,7 @@ $(document).on('click', '.new_change_process_pool_status', function (e) {
    $('#pool_record_id').attr('value', record_id);
    var userwallet = $("#userwallet").val();
 if(cpermission == 1){
-
+ 
 
    Swal.fire({
           title: 'Do you want to process this application or process by company?',
@@ -1452,6 +1865,8 @@ if(cpermission == 1){
           }
         })
      }else{
+     
+
       Swal.fire({
           title: 'Do you want to process this application or process by company?',
           showDenyButton: false,
@@ -1527,6 +1942,287 @@ $(document).on('click','.missed_pool_send_mail',function(){
 });
 
 
+});
+</script>
+
+
+
+
+
+<script >
+ //get_all_yesterday_follow_up_data
+    const { createApp, ref, watch ,nextTick} = Vue;
+
+document.addEventListener('DOMContentLoaded', () => {
+ 
+   const { createApp } = Vue;
+   const dataFromServer = ref([]);
+   const dataFromServerMissedFollowup = ref([]);
+   const dataFromServerTodayFollowup = ref([]);  
+   const dataFromServerYesterdayFollowup =ref([]);
+
+const app = createApp({
+   
+    data() {
+      
+        return {
+         currentPage: 1,
+         dataTable:null,
+         dataTable2:null,
+         dataTable3:null,
+         dataFromServer,
+         dataFromServerMissedFollowup,
+         dataFromServerTodayFollowup,
+         dataFromServerYesterdayFollowup,
+         totalPages: 1,
+         message: ''
+        };
+    },
+    watch: {
+      dataFromServerMissedFollowup(newValue, oldValue) {
+        
+        if(this.dataTable2)
+           {
+
+                 console.log( this.dataTable2);
+                 this.dataTable2.destroy();
+           }
+        nextTick(() => {
+          
+           console.log(this.dataFromServer);
+
+          this.dataTable2=  $('#responsive_datatable_missed').DataTable( );
+                
+                
+               });
+
+        
+       },
+       dataFromServerTodayFollowup(newValue, oldValue) {
+        
+        if(this.dataTable2)
+           {
+
+                 console.log( this.dataTable3);
+                 this.dataTable3.destroy();
+           }
+        nextTick(() => {
+          
+           console.log(this.dataFromServer);
+
+          this.dataTable3=  $('#responsive_datatable_today').DataTable( );
+                
+                
+               });
+
+        
+       },
+       dataFromServerYesterdayFollowup(newValue, oldValue) {
+        
+        if(this.dataTable4)
+           {
+
+                 console.log( this.dataTable4);
+                 this.dataTable4.destroy();
+           }
+        nextTick(() => {
+          
+           console.log(this.dataFromServer);
+
+          this.dataTable4=  $('#responsive_datatable_today').DataTable( );
+                
+                
+               });
+
+        
+       },
+      dataFromServer(newValue, oldValue) {
+        
+         if(this.dataTable)
+            {
+
+                  console.log( this.dataTable);
+                  this.dataTable.destroy();
+            }
+         nextTick(() => {
+           
+            console.log(this.dataFromServer);
+ 
+           this.dataTable=  $('#responsive_process_pool').DataTable( );
+                 
+                 
+                });
+
+         
+        }
+    },
+    methods:
+   {
+      handleSelectChange(event)
+      {
+         this.fetchData( );
+         this.fetchDataMissed();
+         this.fetchDataToday();
+         this.fetchDataYesterday();
+      },
+      getDaysSinceCreated(createdDate)  {
+      const startTimeStamp = new Date(createdDate).getTime();
+      const endTimeStamp = new Date().getTime();
+      return Math.floor((endTimeStamp - startTimeStamp) / (1000 * 3600 * 24));
+      },
+      getServiceCharge(visaid,interested_country) {
+         return '';
+      
+          const apiUrl =this.getBaseUrl()+"franchise/enquiry/get_visa_service_fees";
+ 
+
+    try {
+      const params = new URLSearchParams({ visaid, interested_country });
+
+    
+        const response = fetch(apiUrl, {
+            method: 'POST',
+            headers:{                'Content-Type': 'application/x-www-form-urlencoded',
+'x-DomainKey':'<?=USER_API_ACCESS?>'},
+            body:params
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      
+        const visaService =   response.json();
+        const serviceCharge = visaService.visaservice.service_charge;
+
+// Split the service_charge string by '-' and get the first element
+const service = serviceCharge.split('-')[0];
+        return service;
+    } catch (error) {
+        console.error('Error fetching visa service charge:', error);
+        return null;
+    }
+      return '';
+    },
+      formatDate(date) {
+          return new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        },
+      getBaseUrl() {
+          return '<?php echo base_url(); ?>';
+        },
+        getDaysDifference(date) {
+          const startTimeStamp = new Date(date).getTime();
+          const endTimeStamp = new Date().getTime();
+          const timeDiff = Math.abs(endTimeStamp - startTimeStamp);
+          return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        },
+      fetchData() {
+         $(".loader").show();
+                const self = this;  // Preserve the Vue instance context
+                var enquiry_type = $('.enquiry_type').val();
+                var staff_id = $('.staff_id').val();
+                $.ajax({
+      url : base_url + 'franchise/enquiry/fetch_process_pool_data',
+      type : "POST",
+      data : {enquiry_type,staff_id},
+      success :function(data){
+         
+         self.dataFromServer = data.fetch_process_enquiry_data;
+         self.currentPage = data.current_page;
+         self.totalPages = data.total_pages;
+         
+         $(".loader").css("display","none");
+    
+      }});
+            },
+
+            //get_all_yesterday_follow_up_data
+            fetchDataYesterday() {
+          
+          const self = this;  // Preserve the Vue instance context
+          var enquiry_type = $('.enquiry_type').val();
+   var staff_id = $('.staff_id').val();
+   
+ 
+          $.ajax({
+            url : base_url + 'franchise/enquiry/get_all_yesterday_follow_up_data',
+            type : "POST",
+            data : {enquiry_type,staff_id},
+            success :function(data){
+               
+               self.dataFromServerYesterdayFollowup = data._view;
+            
+               
+               $(".loader").css("display","none");
+
+            }});
+      },
+            fetchDataMissed() {
+          
+          const self = this;  // Preserve the Vue instance context
+          var enquiry_type = $('.enquiry_type').val();
+   var staff_id = $('.staff_id').val();
+   
+ 
+          $.ajax({
+            url : base_url + 'franchise/enquiry/get_all_missed_follow_up_data',
+            type : "POST",
+            data : {enquiry_type,staff_id},
+            success :function(data){
+               
+               self.dataFromServerMissedFollowup = data._view;
+            
+               
+               $(".loader").css("display","none");
+
+            }});
+      },
+      fetchDataToday() {
+          
+          const self = this;  // Preserve the Vue instance context
+          var enquiry_type = $('.enquiry_type').val();
+   var staff_id = $('.staff_id').val();
+   
+ 
+          $.ajax({
+            url : base_url + 'franchise/enquiry/get_all_today_follow_up_data',
+            type : "POST",
+            data : {enquiry_type,staff_id},
+            success :function(data){
+               
+               self.dataFromServerTodayFollowup = data._view;
+            
+               
+               $(".loader").css("display","none");
+
+            }});
+      },
+            getFormValues()
+      {
+         
+        this.fetchData();
+      },
+      getFormValuesSimple()
+      {
+         this.fetchData( );
+      }
+   },
+    
+    mounted() {
+      const self = this; 
+      this.fetchData( );
+      this.fetchDataMissed();
+      this.fetchDataToday();
+      this.fetchDataYesterday();
+    },
+    beforeDestroy() {
+    // Destroy the DataTable instance to prevent memory leaks
+    if (this.dataTable) {
+      this.dataTable.destroy();
+    }
+  }
+   });
+
+app.mount('#firstApp');
 });
 </script>
 
